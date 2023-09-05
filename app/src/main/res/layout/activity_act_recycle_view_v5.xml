@@ -20,18 +20,13 @@
         android:layout_height="8dp"
         android:background="@color/yellow" />
 
-    <com.example.zzt.recycleview.groupedadapter.widget.StickyHeaderLayout
-        android:id="@+id/sticky_layout"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".act.ActRecycleViewV1">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".act.ActRecycleViewV1">
+    </androidx.recyclerview.widget.RecyclerView>
 
-        </androidx.recyclerview.widget.RecyclerView>
-    </com.example.zzt.recycleview.groupedadapter.widget.StickyHeaderLayout>
 
 </LinearLayout>

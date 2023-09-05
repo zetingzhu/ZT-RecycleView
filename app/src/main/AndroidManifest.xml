@@ -32,6 +32,21 @@
             android:theme="@style/Theme.ZTRecycleView">
 
         </activity>
+
+        <activity
+            android:name=".act.ActRecycleViewV2"
+            android:exported="false" />
+
+        <activity
+            android:name=".act.ActRecycleViewV3"
+            android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV4"
+            android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV5"
+            android:exported="false" />
+
     </application>
 
 </manifest>
