@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <LinearLayout
+        android:id="@+id/pull_to_load_footer_content"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:padding="0dp">
+
+        <ProgressBar
+            android:id="@+id/pull_to_load_footer_progressbar"
+            android:layout_width="16dp"
+            android:layout_height="17dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <com.example.zzt.recycleview.refresh.v1.AppPullLoadingLayout
+            android:id="@+id/loadingView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/pull_to_load_footer_hint_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载更多"
+            android:textColor="#9096BB"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

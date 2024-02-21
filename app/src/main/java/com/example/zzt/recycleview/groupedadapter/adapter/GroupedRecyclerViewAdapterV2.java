@@ -69,7 +69,7 @@ public abstract class GroupedRecyclerViewAdapterV2<T extends BaseDiffEntity, G e
         mDiffer.submitList(mList);
     }
 
-    protected void clear() {
+    public void clear() {
         mDiffer.submitList(null);
     }
 

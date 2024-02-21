@@ -19,6 +19,14 @@ object DataListUtil {
         return mList
     }
 
+    fun getListNum(maxNum: Int): List<ItemData> {
+        var mList = mutableListOf<ItemData>()
+        for (i in 0..maxNum) {
+            mList.add(ItemData(i, "title:${i}", "msg:$i"))
+        }
+        return mList
+    }
+
 
     fun getList100EvenNumber(): List<ItemData> {
         var mList = mutableListOf<ItemData>()
