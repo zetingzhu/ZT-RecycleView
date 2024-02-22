@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * Created by lin on 2018/1/10.
  */
-public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
+public class PullToRefreshRecyclerViewV2 extends PullToRefreshBaseV2<RecyclerView> {
 
     private RecyclerView rv;
     /**
@@ -30,7 +30,7 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
      *
      * @param context context
      */
-    public PullToRefreshRecyclerView(Context context) {
+    public PullToRefreshRecyclerViewV2(Context context) {
         super(context);
     }
 
@@ -40,7 +40,7 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
      * @param context context
      * @param attrs   attrs
      */
-    public PullToRefreshRecyclerView(Context context, AttributeSet attrs) {
+    public PullToRefreshRecyclerViewV2(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -51,8 +51,8 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
      * @param attrs    attrs
      * @param defStyle defStyle
      */
-    public PullToRefreshRecyclerView(Context context, AttributeSet attrs,
-                                     int defStyle) {
+    public PullToRefreshRecyclerViewV2(Context context, AttributeSet attrs,
+                                       int defStyle) {
         super(context, attrs, defStyle);
         setPullLoadEnabled(false);
     }
@@ -61,25 +61,25 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
     protected RecyclerView createRefreshableView(Context context, AttributeSet attrs) {
         rv = new RecyclerView(context);
         rv.setLayoutManager(new LinearLayoutManager(context));
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                Log.d("zzz", "加载状态： isScr:" + isScrollLoadEnabled() + " hasMore:" + hasMoreData() + " newState：" + newState + " pullUp:" + isReadyForPullUp());
-                if (isScrollLoadEnabled() && hasMoreData()) {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (isReadyForPullUp()) {
-                            startLoading();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
+//        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                Log.d("zzz", "加载状态： isScr:" + isScrollLoadEnabled() + " hasMore:" + hasMoreData() + " newState：" + newState + " pullUp:" + isReadyForPullUp());
+//                if (isScrollLoadEnabled() && hasMoreData()) {
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        if (isReadyForPullUp()) {
+//                            startLoading();
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//            }
+//        });
         return rv;
     }
 
@@ -150,11 +150,6 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
                 mLoadMoreFooterLayout.show(false);
             }
         }
-    }
-
-    @Override
-    public void setOnRefreshListenerV2(OnRefreshListenerV2<RecyclerView> refreshListener) {
-
     }
 
     @Override
