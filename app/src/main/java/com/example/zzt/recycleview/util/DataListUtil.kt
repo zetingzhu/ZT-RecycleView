@@ -11,7 +11,7 @@ import java.util.Collections
  */
 object DataListUtil {
 
-    fun getList100(): List<ItemData> {
+    fun getList100(): MutableList<ItemData> {
         var mList = mutableListOf<ItemData>()
         for (i in 0..1000) {
             mList.add(ItemData(i, "title:${i}", "msg:$i"))
@@ -27,8 +27,15 @@ object DataListUtil {
         return mList
     }
 
+    fun getListCount(count: Int): MutableList<ItemData> {
+        var mList = mutableListOf<ItemData>()
+        for (i in 0..count) {
+            mList.add(ItemData(i, "title:${i}", "msg:$i"))
+        }
+        return mList
+    }
 
-    fun getList100EvenNumber(): List<ItemData> {
+    fun getList100EvenNumber(): MutableList<ItemData> {
         var mList = mutableListOf<ItemData>()
         for (i in 0..1000) {
             if (i % 2 == 0) {
@@ -41,7 +48,7 @@ object DataListUtil {
     }
 
 
-    fun getList100Random(): List<ItemData> {
+    fun getList100Random(): MutableList<ItemData> {
         var mList = mutableListOf<ItemData>()
         var index = (1..6).random()
         for (i in 0..1000) {
@@ -56,7 +63,7 @@ object DataListUtil {
     }
 
 
-    fun getList100RandomBG(): List<ItemData> {
+    fun getList100RandomBG(): MutableList<ItemData> {
         var mList = mutableListOf<ItemData>()
         for (i in 0..1000) {
             val randomColor = ColorUtils.getRandomColor()
@@ -65,7 +72,7 @@ object DataListUtil {
         return mList
     }
 
-    fun getList100Sort(): List<ItemData> {
+    fun getList100Sort(): MutableList<ItemData> {
         var mList = mutableListOf<ItemData>()
         for (i in 0..100) {
             var sort = (1L..100L).random()

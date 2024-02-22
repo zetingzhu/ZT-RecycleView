@@ -11,7 +11,8 @@
         android:id="@+id/rv_list_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".act.ActRecycleViewV1">
+        tools:context=".act.ActRecycleViewV1"
+        tools:itemCount="1">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -20,11 +21,18 @@
         android:layout_height="8dp"
         android:background="@color/yellow" />
 
-    <com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
-        android:id="@+id/pullrv_list"
+    <com.example.zzt.recycleview.groupedadapter.widget.RVStickyHeaderLayout
+        android:id="@+id/sticky_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".act.ActRecycleViewV1">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </com.example.zzt.recycleview.groupedadapter.widget.RVStickyHeaderLayout>
 
 </LinearLayout>

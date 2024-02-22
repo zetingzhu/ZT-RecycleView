@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
-import com.example.zzt.recycleview.adapter.AdapterV1
+import com.example.zzt.recycleview.adapter.AdapterH
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshBase
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
 import com.example.zzt.recycleview.util.DataListUtil
@@ -20,7 +20,7 @@ class ActRecycleViewV9 : AppCompatActivity() {
     lateinit var pullrv_list: PullToRefreshRecyclerView
     lateinit var rv_list: RecyclerView
     lateinit var rv_list_top: RecyclerView
-    private var mAdapterV1: AdapterV1? = null
+    private var mAdapterV1: AdapterH? = null
     var topListDialog: MutableList<String>? = null
     var topListener: BtnHorizontalRecyclerAdapter.OnItemClickListener<String>? = null
     var adapterAsync: AdapterAsync? = null

@@ -3,7 +3,6 @@ package com.example.zzt.recycleview.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.entity.ItemData
@@ -15,15 +14,32 @@ import com.example.zzt.recycleview.hold.BaseRecyclerViewHolder
  * @date: 2023/8/30
  *
  */
-class AdapterV1 : RecyclerView.Adapter<BaseRecyclerViewHolder>() {
-    var mList: List<ItemData>? = null
+class AdapterV : RecyclerView.Adapter<BaseRecyclerViewHolder>() {
+    var mList: MutableList<ItemData>? = null
 
     /**
      * 更新列表数据
      */
-    fun setListData(data: List<ItemData>?, recyclerView: RecyclerView?) {
-        this.mList = data ?: ArrayList<ItemData>()
+    fun setListData(data: MutableList<ItemData>?, recyclerView: RecyclerView?) {
+        this.mList = data ?: mutableListOf()
         notifyChanged(recyclerView)
+    }
+
+
+    fun addOneData(item: ItemData?) {
+        if (mList != null && item != null) {
+            mList?.add(0, item)
+            notifyItemInserted(0)
+            notifyItemRangeChanged(0, getItemCount())
+        }
+    }
+
+    fun removeOneData(pos: Int) {
+        if (mList != null) {
+            mList?.removeAt(pos)
+            notifyItemRemoved(pos)
+            notifyItemRangeChanged(0, getItemCount())
+        }
     }
 
     /**

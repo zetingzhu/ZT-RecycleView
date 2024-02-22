@@ -20,11 +20,11 @@
         android:layout_height="8dp"
         android:background="@color/yellow" />
 
-    <com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
+    <com.handmark.pulltorefresh.library.extras.recyclerview.PullToRefreshRecyclerView
         android:id="@+id/pullrv_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView>
+    </com.handmark.pulltorefresh.library.extras.recyclerview.PullToRefreshRecyclerView>
 
 </LinearLayout>
