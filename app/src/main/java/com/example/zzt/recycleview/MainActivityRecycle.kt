@@ -9,6 +9,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV10
 import com.example.zzt.recycleview.act.ActRecycleViewV11
 import com.example.zzt.recycleview.act.ActRecycleViewV12
 import com.example.zzt.recycleview.act.ActRecycleViewV13
+import com.example.zzt.recycleview.act.ActRecycleViewV14
 import com.example.zzt.recycleview.act.ActRecycleViewV2
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
@@ -51,11 +52,30 @@ class MainActivityRecycle : AppCompatActivity() {
         mListDialog.add(StartActivityDao("添加移除动画", "", ActRecycleViewV7::class.java))
         mListDialog.add(StartActivityDao("头部悬浮固定", "", ActRecycleViewV8::class.java))
         mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
-        mListDialog.add(StartActivityDao("下拉上拉 1 ", "", ActRecycleViewV9::class.java))
-        mListDialog.add(StartActivityDao("下拉上拉 2 ", "", ActRecycleViewV10::class.java))
+        mListDialog.add(StartActivityDao("下拉上拉 PullToRefreshRecyclerView 改造 ", "", ActRecycleViewV9::class.java))
+        mListDialog.add(
+            StartActivityDao(
+                "下拉上拉 下方 NestedScrollView ",
+                "",
+                ActRecycleViewV14::class.java
+            )
+        )
+        mListDialog.add(StartActivityDao("下拉上拉 PullToRefresh 修改 ", "", ActRecycleViewV10::class.java))
         mListDialog.add(StartActivityDao("下拉上拉 自定义失败 ", "", ActRecycleViewV11::class.java))
-        mListDialog.add(StartActivityDao("下拉上拉 RV 加个弹性拷贝 ", "", ActRecycleViewV12::class.java))
-        mListDialog.add(StartActivityDao("下拉上拉 RV 加个弹性转义 ", "", ActRecycleViewV13::class.java))
+        mListDialog.add(
+            StartActivityDao(
+                "下拉上拉 RV 加个弹性拷贝 ",
+                "",
+                ActRecycleViewV12::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
+                "下拉上拉 RV 加个弹性转义 ",
+                "",
+                ActRecycleViewV13::class.java
+            )
+        )
         StartActivityRecyclerAdapter.setAdapterData(
             rv_main, RecyclerView.VERTICAL, mListDialog
         ) { itemView: View?, position: Int, data: StartActivityDao ->

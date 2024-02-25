@@ -7,24 +7,49 @@
     android:orientation="vertical"
     tools:context=".act.ActRecycleViewV1">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_list_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".act.ActRecycleViewV1">
 
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="@color/yellow" />
-
-    <com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
-        android:id="@+id/pullrv_list"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView>
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="#5FF"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context=".act.ActRecycleViewV1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_list_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:context=".act.ActRecycleViewV1">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:background="@color/yellow" />
+            </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
+            android:id="@+id/pullrv_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

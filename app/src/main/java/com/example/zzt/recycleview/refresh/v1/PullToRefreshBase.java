@@ -3,6 +3,7 @@ package com.example.zzt.recycleview.refresh.v1;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -10,9 +11,21 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.webkit.WebView;
+import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
+
+import androidx.annotation.NonNull;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingParent3;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ScrollingView;
+import androidx.core.view.ViewCompat;
+
+import kotlin.jvm.Synchronized;
 
 
 /**
@@ -23,10 +36,8 @@ import android.widget.ListView;
  * @since 2013-7-29
  */
 @SuppressLint("NewApi")
-public abstract class PullToRefreshBase<T extends View> extends LinearLayout
-        implements IPullToRefresh<T> {
-
-
+public abstract class PullToRefreshBase<T extends View> extends LinearLayout implements IPullToRefresh<T>, NestedScrollingParent3 {
+    private static final String TAG = PullToRefreshBase.class.getSimpleName();
     /**
      * 回滚的时间
      */
@@ -105,6 +116,19 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     private FrameLayout mRefreshableViewWrapper;
 
     /**
+     * 嵌套滚动工具类
+     */
+    private NestedScrollingParentHelper mParentHelper;
+    /**
+     * 表示是否嵌套滑动
+     */
+    private boolean mIsNestedTouchEvent = false;
+    /**
+     * 标识是否支持嵌套滚动
+     */
+    private boolean canNestedScrollBoo = false;
+
+    /**
      * 构造方法
      *
      * @param context context
@@ -145,11 +169,14 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     private void init(Context context, AttributeSet attrs) {
         setOrientation(LinearLayout.VERTICAL);
 
+        mParentHelper = new NestedScrollingParentHelper(this);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         mHeaderLayout = createHeaderLoadingLayout(context, attrs);
         mFooterLayout = createFooterLoadingLayout(context, attrs);
         mRefreshableView = createRefreshableView(context, attrs);
+        // 校验当前视图是否支持嵌套 滚动
+        canNestedScrollBoo = isNestedScrollableView(mRefreshableView);
 
         if (null == mRefreshableView) {
             throw new NullPointerException("Refreshable view can not be null.");
@@ -405,6 +432,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     @Override
     public void setOnRefreshListener(OnRefreshListener<T> refreshListener) {
         mRefreshListener = refreshListener;
+    }
+
+    @Override
+    public void setOnRefreshListenerV2(OnRefreshListenerV2<T> refreshListener) {
+
     }
 
 
@@ -900,6 +932,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
         return mInterceptEventEnable;
     }
 
+
     /**
      * 实现了平滑滚动的Runnable
      *
@@ -1003,59 +1036,141 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
         }
     }
 
-    /*public static enum State {
 
-     *//**
-     * When the UI is in a state which means that user is not interacting
-     * with the Pull-to-Refresh function.
-     *//*
-		RESET(0x0),
+    /**
+     * 嵌套滑动开始时调用，
+     * 方法返回 true 时，表示此Parent能够接收此次嵌套滑动事件
+     * 返回 false，不接收此次嵌套滑动事件，后续方法都不会调用
+     */
+    @Override
+    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int axes, int type) {
+        // 接受竖直方向的嵌套滑动
+        return (canNestedScrollBoo && (axes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0);
+    }
 
-		*//**
-     * When the UI is being pulled by the user, but has not been pulled far
-     * enough so that it refreshes when released.
-     *//*
-		PULL_TO_REFRESH(0x1),
+    /**
+     * 当 onStartNestedScroll() 方法返回 true 后，此方法会立刻调用可在此方法做每次嵌套滑动的初始化工作
+     */
+    @Override
+    public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int axes, int type) {
+        mParentHelper.onNestedScrollAccepted(child, target, axes, type);
+    }
 
-		*//**
-     * When the UI is being pulled by the user, and <strong>has</strong>
-     * been pulled far enough so that it will refresh when released.
-     *//*
-		RELEASE_TO_REFRESH(0x2),
+    /**
+     * 当嵌套滑动即将结束时，会调用此方法
+     */
+    @Override
+    public void onStopNestedScroll(@NonNull View target, int type) {
+        mParentHelper.onStopNestedScroll(target, type);
+        Log.d(TAG, "滑动结束》》》》》》 mIsHandledTouchEvent：" + mIsNestedTouchEvent);
+        if (mIsNestedTouchEvent) {
+            mIsNestedTouchEvent = false;
+            // 当第一个显示出来时
+            if (isReadyForPullDown()) {
+                // 调用刷新
+                if (mPullRefreshEnabled && (mPullDownState == ILoadingLayout.State.RELEASE_TO_REFRESH)) {
+                    startRefreshing();
+                } else {
+                    onStateChanged(ILoadingLayout.State.NONE, false);
+                }
+                resetHeaderLayout();
+            } else if (isReadyForPullUp()) {
+                // 加载更多
+                if (isPullLoadEnabled() && (mPullUpState == ILoadingLayout.State.RELEASE_TO_REFRESH)) {
+                    startLoading();
+                } else {
+                    onStateChanged(ILoadingLayout.State.NONE, false);
+                }
+                resetFooterLayout();
+            } else {
+                onStateChanged(ILoadingLayout.State.NONE, false);
+            }
+        }
+    }
 
-		*//**
-     * When the UI is currently refreshing, caused by a pull gesture.
-     *//*
-		REFRESHING(0x8),
+    @Override
+    public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+        if (type == ViewCompat.TYPE_TOUCH) {
+            onNestedScrollInternal(dyUnconsumed, type, null);
+        }
+    }
 
-		*//**
-     * When the UI is currently refreshing, caused by a call to
-     * {@link PullToRefreshBase#setRefreshing() setRefreshing()}.
-     *//*
-		MANUAL_REFRESHING(0x9),
+    @Override
+    public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
+        if (type == ViewCompat.TYPE_TOUCH) {
+            Log.d(TAG, "onNestedScroll 子类滚动 0 未消耗距离:" + dyUnconsumed);
+            onNestedScrollInternal(dyUnconsumed, type, consumed);
+        } else {
+            consumed[1] += dyUnconsumed;
+        }
+    }
 
-		*//**
-     * When the UI is currently overscrolling, caused by a fling on the
-     * Refreshable View.
-     *//*
-		OVERSCROLLING(0x10);
+    @Override
+    public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+        if (dy == 0) return;
+        // 触摸事件的嵌套滑动才处理
+        if (type == ViewCompat.TYPE_TOUCH && mIsNestedTouchEvent) {
+            Log.d(TAG, "onNestedPreScroll 父类滚动 0 dy:" + dy);
+            if (isPullRefreshEnabled() && isReadyForPullDown()) {
+                pullHeaderLayout((-1 * dy) / OFFSET_RADIO);
+            } else if (isPullLoadEnabled() && isReadyForPullUp()) {
+                pullFooterLayout((-1 * dy) / OFFSET_RADIO);
+            }
+            consumed[1] += dy;
+        }
+    }
 
-		*//**
-     * Maps an int to a specific state. This is needed when saving state.
+    /**
+     * @param dyUnconsumed
+     * @param type
+     * @param consumed
+     */
+    @Synchronized
+    private void onNestedScrollInternal(int dyUnconsumed, int type, @NonNull int[] consumed) {
+        if (dyUnconsumed == 0) return;
+        // dy > 0 向上滚
+        if (type == ViewCompat.TYPE_NON_TOUCH) {
+            // fling 不处理，直接消耗
+            consumed[1] += dyUnconsumed;
+        } else {
+            if ((dyUnconsumed < 0 && canVerticalOverScroll(mRefreshableView, -1)) || (dyUnconsumed > 0 && canVerticalOverScroll(mRefreshableView, 1))) {
+                mIsNestedTouchEvent = true;
+                Log.d(TAG, "onNestedScrollInternal 嵌套滚动开始:" + mIsNestedTouchEvent);
+                if (isPullRefreshEnabled() && isReadyForPullDown()) {
+                    pullHeaderLayout((float) dyUnconsumed / OFFSET_RADIO);
+                } else if (isPullLoadEnabled() && isReadyForPullUp()) {
+                    pullFooterLayout((float) dyUnconsumed / OFFSET_RADIO);
+                }
+                consumed[1] += dyUnconsumed;
+            }
+        }
+    }
+
+    /**
+     * 检测当前视图是否已经滚动完成
      *
-     * @param stateInt
-     *            - int to map a State to
-     * @return State that stateInt maps to
-     *//*
-		static State mapIntToValue(final int stateInt) {
-			for (State value : State.values()) {
-				if (stateInt == value.getIntValue()) {
-					return value;
-				}
-			}
+     * @param targetView
+     * @param direction  > 0 表向下滚动，< 0 表向上滚动
+     * @return 可以过度滚动为 true，反之为 false
+     */
+    private boolean canVerticalOverScroll(View targetView, int direction) {
+        if (targetView != null) {
+            // 如果该View还可以滚动，说明还没到过度滚动的时候
+            if (targetView.canScrollVertically(direction) && targetView.getVisibility() == View.VISIBLE) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
-			// If not, return default
-			return RESET;
-		}
-	}*/
+    /**
+     * 判断当前视图是否支持嵌套滚动
+     *
+     * @param view
+     * @return
+     */
+    public boolean isNestedScrollableView(View view) {
+        return view instanceof NestedScrollingChild;
+    }
 }

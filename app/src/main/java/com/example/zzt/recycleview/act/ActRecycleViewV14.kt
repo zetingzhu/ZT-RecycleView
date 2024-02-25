@@ -10,18 +10,14 @@ import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
 import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListenerV2
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshBase
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshBaseV2
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerViewV2
 import com.example.zzt.recycleview.util.DataListUtil
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable
 import com.zzt.decoration.RecycleViewDecorationRemovePos
 
-class ActRecycleViewV11 : AppCompatActivity() {
-    lateinit var pullrv_list: PullToRefreshRecyclerViewV2
+class ActRecycleViewV14 : AppCompatActivity() {
     lateinit var rv_list: RecyclerView
     lateinit var rv_list_top: RecyclerView
     private var mAdapterV1: AdapterH? = null
@@ -30,7 +26,7 @@ class ActRecycleViewV11 : AppCompatActivity() {
     var adapterAsync: AdapterAsync? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_act_recycle_view_v11)
+        setContentView(R.layout.activity_act_recycle_view_v14)
         initView()
 
         initViewParent()
@@ -38,28 +34,8 @@ class ActRecycleViewV11 : AppCompatActivity() {
 
 
     private fun initView() {
-        pullrv_list = findViewById(R.id.pullrv_list)
-        pullrv_list.setPullLoadEnabled(true)
-        pullrv_list.setPullRefreshEnabled(true)
-        pullrv_list.setScrollLoadEnabled(true)
-        pullrv_list.setOnRefreshListenerV2(object : OnRefreshListenerV2<RecyclerView> {
-            override fun onPullDownToRefresh(refreshView: PullToRefreshBaseV2<RecyclerView>?) {
-                pullrv_list.postDelayed(Runnable {
-                    pullrv_list.onPullDownRefreshComplete()
-                    pullrv_list.onPullUpRefreshComplete()
-                }, 1000L)
-            }
-
-            override fun onPullUpToRefresh(refreshView: PullToRefreshBaseV2<RecyclerView>?) {
-                pullrv_list.postDelayed(Runnable {
-                    pullrv_list.onPullDownRefreshComplete()
-                    pullrv_list.onPullUpRefreshComplete()
-                }, 1000L)
-            }
-        })
-        rv_list = pullrv_list.refreshableView
-
         rv_list_top = findViewById(R.id.rv_list_top)
+        rv_list = findViewById(R.id.rv_list)
 
         topListDialog = ArrayList()
         topListDialog?.add("初始化")
@@ -101,10 +77,11 @@ class ActRecycleViewV11 : AppCompatActivity() {
         rv_list.apply {
             adapterAsync = AdapterAsync()
 
-            layoutManager = LinearLayoutManager(this@ActRecycleViewV11)
+            layoutManager = LinearLayoutManager(this@ActRecycleViewV14)
             //添加自定义分割线
             val decoration = RecycleViewDecorationRemovePos(
-                this.context, RecycleViewDecorationRemovePos.VERTICAL_TOB_BOTTOM
+                this.context,
+                RecycleViewDecorationRemovePos.VERTICAL_TOB_BOTTOM
             )
             decoration.setDrawable(
                 DividerDrawable(
@@ -116,7 +93,7 @@ class ActRecycleViewV11 : AppCompatActivity() {
             addItemDecoration(decoration)
 
             adapter = adapterAsync
-            adapterAsync?.submitList(DataListUtil.getListNum(10))
+            adapterAsync?.submitList(DataListUtil.getListNum(30))
         }
 
 

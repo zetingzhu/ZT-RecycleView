@@ -20,10 +20,7 @@ import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
 
-import com.example.zzt.recycleview.refresh.v2.WidgetUtil;
-
 import kotlin.jvm.Synchronized;
-import kotlin.ranges.RangesKt;
 
 
 /**
@@ -123,15 +120,6 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
      */
     private NestedScrollingParentHelper mParentHelper;
 
-    private boolean mIsAllowOverScroll = true;   // 是否允许过渡滑动
-    //    private int mPreConsumedNeeded = 0;          // 在子 View 滑动前，此View需要滑动的距离
-//    private float mSpinner = 0f;                      // 当前竖直方向上 translationY 的距离
-    // 阻尼滑动参数
-    private float mMaxDragRate = 2.5f;
-    private int mMaxDragHeight = 250;
-    private int mScreenHeightPixels;
-
-
     /**
      * 构造方法
      *
@@ -174,14 +162,9 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
         setOrientation(LinearLayout.VERTICAL);
 
         mParentHelper = new NestedScrollingParentHelper(this);
-        mScreenHeightPixels = context.getResources().getDisplayMetrics().heightPixels;
 
         ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
         mTouchSlop = viewConfiguration.getScaledTouchSlop();
-        // 最小滑动速度
-        float mMinimumVelocity = viewConfiguration.getScaledMinimumFlingVelocity();
-        // 最大滑动速度
-        float mMaximumVelocity = viewConfiguration.getScaledMaximumFlingVelocity();
 
         mHeaderLayout = createHeaderLoadingLayout(context, attrs);
         mFooterLayout = createFooterLoadingLayout(context, attrs);
@@ -1023,6 +1006,7 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
     }
 
 
+    // 在子View调用 dispatchNestedPreScroll 之后，这个方法拿到了回调
     @Override
     public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
         if (dy == 0) return;
@@ -1034,10 +1018,7 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
             } else if (isPullLoadEnabled() && isReadyForPullUp()) {
                 pullFooterLayout((-1 * dy) / OFFSET_RADIO);
             }
-            
-            if (consumed != null) {
-                consumed[1] += dy;
-            }
+            consumed[1] += dy;
         }
     }
 
@@ -1056,15 +1037,15 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
         mParentHelper.onNestedScrollAccepted(child, target, axes, type);
     }
 
-
-    // 当嵌套滑动即将结束时，会调用此方法
+    /**
+     * 当嵌套滑动即将结束时，会调用此方法
+     */
     @Override
     public void onStopNestedScroll(@NonNull View target, int type) {
         mParentHelper.onStopNestedScroll(target, type);
-        Log.d(TAG, "滑动结束》》》》》》 mIsHandledTouchEvent：" + mIsHandledTouchEvent);
-        mIsNestedTouchEvent = false;
-        if (mIsHandledTouchEvent) {
-            mIsHandledTouchEvent = false;
+        Log.d(TAG, "滑动结束》》》》》》 mIsHandledTouchEvent：" + mIsNestedTouchEvent);
+        if (mIsNestedTouchEvent) {
+            mIsNestedTouchEvent = false;
             // 当第一个显示出来时
             if (isReadyForPullDown()) {
                 // 调用刷新
@@ -1089,42 +1070,16 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
     }
 
     @Override
-    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-
-    }
-
-    /**
-     * 此 Parent 正在执行嵌套滑动时，会调用此方法，在这里实现嵌套滑动的逻辑
-     *
-     * @param target       The descendent view controlling the nested scroll
-     * @param dxConsumed   Horizontal scroll distance in pixels already consumed by target
-     * @param dyConsumed   Vertical scroll distance in pixels already consumed by target
-     * @param dxUnconsumed Horizontal scroll distance in pixels not consumed by target
-     * @param dyUnconsumed Vertical scroll distance in pixels not consumed by target
-     */
-    @Override
     public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         if (type == ViewCompat.TYPE_TOUCH) {
             onNestedScrollInternal(dyUnconsumed, type, null);
         }
     }
 
-
     /**
      * 此 Parent 正在执行嵌套滑动时，会调用此方法，在这里实现嵌套滑动的逻辑
      * 与上面方法的区别，此方法多了个 consumed 参数，用于存放嵌套滑动执行完后，
      * 被此 parent 消耗的滑动距离
-     *
-     * @param target       The descendant view controlling the nested scroll
-     * @param dxConsumed   Horizontal scroll distance in pixels already consumed by target
-     * @param dyConsumed   Vertical scroll distance in pixels already consumed by target
-     * @param dxUnconsumed Horizontal scroll distance in pixels not consumed by target
-     * @param dyUnconsumed Vertical scroll distance in pixels not consumed by target
-     * @param type         the type of input which cause this scroll event
-     * @param consumed     Output. Upon this method returning, will contain the scroll
-     *                     distances consumed by this nested scrolling parent and the scroll distances
-     *                     consumed by any other parent up the view hierarchy
      */
     @Override
     public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
@@ -1140,65 +1095,39 @@ public abstract class PullToRefreshBaseV2<T extends View> extends LinearLayout i
     private void onNestedScrollInternal(int dyUnconsumed, int type, @NonNull int[] consumed) {
         if (dyUnconsumed == 0) return;
         // dy > 0 向上滚
-        int dy = dyUnconsumed;
         if (type == ViewCompat.TYPE_NON_TOUCH) {
             // fling 不处理，直接消耗
-            if (consumed != null) {
-                consumed[1] += dy;
-            }
+            consumed[1] += dyUnconsumed;
         } else {
-            if ((dy < 0 && mIsAllowOverScroll && WidgetUtil.canRefresh(mRefreshableView, null)) || (dy > 0 && mIsAllowOverScroll && WidgetUtil.canLoadMore(mRefreshableView, null))) {
+            if ((dyUnconsumed < 0 && canVerticalOverScroll(mRefreshableView, -1)) || (dyUnconsumed > 0 && canVerticalOverScroll(mRefreshableView, 1))) {
                 mIsNestedTouchEvent = true;
-//                mPreConsumedNeeded -= dy;
-//                Log.d(TAG, "拉动 ：" + mPreConsumedNeeded + " dy:" + dyUnconsumed);
+                Log.d(TAG, "onNestedScrollInternal 嵌套滚动开始:" + mIsNestedTouchEvent);
                 if (isPullRefreshEnabled() && isReadyForPullDown()) {
                     pullHeaderLayout((float) dyUnconsumed / OFFSET_RADIO);
                 } else if (isPullLoadEnabled() && isReadyForPullUp()) {
                     pullFooterLayout((float) dyUnconsumed / OFFSET_RADIO);
                 }
-//                mPreConsumedNeeded -= dy;
-//                moveTranslation(computeDampedSlipDistance(mPreConsumedNeeded));
-                if (consumed != null) {
-                    consumed[1] += dy;
-                }
+                consumed[1] += dyUnconsumed;
             }
         }
     }
 
-    private void moveTranslation(Float dy) {
-        Log.d(TAG, "上拉滑动距离 dy:" + dy);
-//        for (int i = 0; i < super.getChildCount(); i++) {
-//            super.getChildAt(i).setTranslationY(dy);
-//        }
-//        mSpinner = dy;
-    }
-
     /**
-     * 计算阻尼滑动距离
+     * 检测当前视图是否已经滚动完成
      *
-     * @param originTranslation 原始应该滑动的距离
-     * @return Float, 计算结果
+     * @param targetView
+     * @param direction  > 0 表向下滚动，< 0 表向上滚动
+     * @return 可以过度滚动为 true，反之为 false
      */
-    private float computeDampedSlipDistance(int originTranslation) {
-        float dragRate = 0.5F;
-        if (originTranslation >= 0) {
-            float m = mMaxDragRate < 10f ? mMaxDragRate * mMaxDragHeight : mMaxDragRate;
-            int h = Math.max(mScreenHeightPixels / 2, getHeight());
-            float x = Math.max(originTranslation * dragRate, 0.0F);
-            // y = Math.min(M * (1 - Math.pow(100, -x / (H == 0 ? 1 : H))), x);// 公式 y = M(1-100^(-x/H))
-            float hh = -x / (float) (h == 0 ? 1 : h);
-            float y = (float) (m * (1 - Math.pow(100f, hh)));
-            return y;
-        } else {
-            float m = mMaxDragRate < 10f ? mMaxDragRate * mMaxDragHeight : mMaxDragRate;
-            int h = Math.max(mScreenHeightPixels / 2, getHeight());
-            float x = -Math.min(originTranslation * dragRate, 0.0f);
-            // y = -Math.min(M * (1 - Math.pow(100, -x / (H == 0 ? 1 : H))), x);// 公式 y = M(1-100^(-x/H))
-            float hh = -x / (h == 0 ? 1 : h);
-            float y = (float) (-m * (1 - Math.pow(100f, hh)));
-            return y;
+    private boolean canVerticalOverScroll(View targetView, int direction) {
+        if (targetView != null) {
+            // 如果该View还可以滚动，说明还没到过度滚动的时候
+            if (targetView.canScrollVertically(direction) && targetView.getVisibility() == View.VISIBLE) {
+                return false;
+            }
+            return true;
         }
+        return false;
     }
-
 
 }
