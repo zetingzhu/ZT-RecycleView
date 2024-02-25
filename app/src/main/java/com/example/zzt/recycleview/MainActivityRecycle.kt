@@ -10,6 +10,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV11
 import com.example.zzt.recycleview.act.ActRecycleViewV12
 import com.example.zzt.recycleview.act.ActRecycleViewV13
 import com.example.zzt.recycleview.act.ActRecycleViewV14
+import com.example.zzt.recycleview.act.ActRecycleViewV15
 import com.example.zzt.recycleview.act.ActRecycleViewV2
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
@@ -58,6 +59,13 @@ class MainActivityRecycle : AppCompatActivity() {
                 "下拉上拉 下方 NestedScrollView ",
                 "",
                 ActRecycleViewV14::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
+                "下拉上拉 下方 SmartRefreshLayout ",
+                "",
+                ActRecycleViewV15::class.java
             )
         )
         mListDialog.add(StartActivityDao("下拉上拉 PullToRefresh 修改 ", "", ActRecycleViewV10::class.java))

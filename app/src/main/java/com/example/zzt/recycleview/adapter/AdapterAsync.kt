@@ -77,7 +77,7 @@ class AdapterAsync : RecyclerView.Adapter<BaseRecyclerViewHolder> {
     override fun onBindViewHolder(holder: BaseRecyclerViewHolder, position: Int) {
         val mPosition = holder.bindingAdapterPosition
         val itemData = mDiffer?.currentList?.get(mPosition)
-        Log.d(TAG, "刷新数据 mPosition：${mPosition}")
+//        Log.d(TAG, "刷新数据 mPosition：${mPosition}")
         itemData?.let {
             holder.get<TextView>(R.id.tv_title).text = "${it.id}  >> ${it.title}"
             holder.get<TextView>(R.id.tv_msg).text = "${it.msg}"
@@ -93,6 +93,6 @@ class AdapterAsync : RecyclerView.Adapter<BaseRecyclerViewHolder> {
         payloads: MutableList<Any>
     ) {
         super.onBindViewHolder(holder, position, payloads)
-        Log.d(TAG, "刷新数据 payloads mPosition：${position}")
+//        Log.d(TAG, "刷新数据 payloads mPosition：${position}")
     }
 }

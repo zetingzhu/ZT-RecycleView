@@ -17,3 +17,7 @@ dependencyResolutionManagement {
 rootProject.name = "ZT-RecycleView"
 include ':app'
 include ':mylibrary'
+include ':refresh-header-classics'
+include ':refresh-layout-kernel'
+include ':refresh-footer-classics'
+include ':refresh-drawable-paint'
