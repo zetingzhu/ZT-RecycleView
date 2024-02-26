@@ -35,16 +35,8 @@ class MainActivityRecycle : AppCompatActivity() {
         rv_main = findViewById(R.id.rv_main)
 
         val mListDialog: MutableList<StartActivityDao> = ArrayList()
-        mListDialog.add(
-            StartActivityDao(
-                "普通列表", "就是进入一个普通列表", ActRecycleViewV1::class.java
-            )
-        )
-        mListDialog.add(
-            StartActivityDao(
-                "异步更新列表", "AdapterAsync", ActRecycleViewV2::class.java
-            )
-        )
+        mListDialog.add(StartActivityDao("普通列表", "就是进入一个普通列表", ActRecycleViewV1::class.java))
+        mListDialog.add(StartActivityDao("异步更新列表", "AdapterAsync", ActRecycleViewV2::class.java))
         mListDialog.add(StartActivityDao("普通分组列表", "", ActRecycleViewV3::class.java))
         mListDialog.add(StartActivityDao("可收缩分组列表", "", ActRecycleViewV4::class.java))
         mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
@@ -54,39 +46,13 @@ class MainActivityRecycle : AppCompatActivity() {
         mListDialog.add(StartActivityDao("头部悬浮固定", "", ActRecycleViewV8::class.java))
         mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
         mListDialog.add(StartActivityDao("下拉上拉 PullToRefreshRecyclerView 改造 ", "", ActRecycleViewV9::class.java))
-        mListDialog.add(
-            StartActivityDao(
-                "下拉上拉 下方 NestedScrollView ",
-                "",
-                ActRecycleViewV14::class.java
-            )
-        )
-        mListDialog.add(
-            StartActivityDao(
-                "下拉上拉 下方 SmartRefreshLayout ",
-                "",
-                ActRecycleViewV15::class.java
-            )
-        )
-        mListDialog.add(StartActivityDao("下拉上拉 PullToRefresh 修改 ", "", ActRecycleViewV10::class.java))
+        mListDialog.add(StartActivityDao("下拉上拉 下方 NestedScrollView ", "", ActRecycleViewV14::class.java))
+        mListDialog.add(StartActivityDao("下拉上拉 下方 SmartRefreshLayout ", "", ActRecycleViewV15::class.java))
+        mListDialog.add(StartActivityDao("下拉上拉 PullToRefresh库修改 ", "", ActRecycleViewV10::class.java))
         mListDialog.add(StartActivityDao("下拉上拉 自定义失败 ", "", ActRecycleViewV11::class.java))
-        mListDialog.add(
-            StartActivityDao(
-                "下拉上拉 RV 加个弹性拷贝 ",
-                "",
-                ActRecycleViewV12::class.java
-            )
-        )
-        mListDialog.add(
-            StartActivityDao(
-                "下拉上拉 RV 加个弹性转义 ",
-                "",
-                ActRecycleViewV13::class.java
-            )
-        )
-        StartActivityRecyclerAdapter.setAdapterData(
-            rv_main, RecyclerView.VERTICAL, mListDialog
-        ) { itemView: View?, position: Int, data: StartActivityDao ->
+        mListDialog.add(StartActivityDao("下拉上拉 RV 加个弹性拷贝 ", "", ActRecycleViewV12::class.java))
+        mListDialog.add(StartActivityDao("下拉上拉 RV 加个弹性转义 ", "", ActRecycleViewV13::class.java))
+        StartActivityRecyclerAdapter.setAdapterData(rv_main, RecyclerView.VERTICAL, mListDialog) { itemView: View?, position: Int, data: StartActivityDao ->
             when (data.arouter) {
                 "1" -> {
                 }
