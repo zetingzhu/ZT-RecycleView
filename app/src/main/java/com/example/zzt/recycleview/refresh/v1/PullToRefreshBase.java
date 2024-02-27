@@ -1173,23 +1173,25 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
      * 当前控件滑动处理
      */
     private void onNestedScrollInternal(int dyConsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
-        /**
-         *  先将滑动扔给父控件处理，父控件结束，当前继续
-         */
-        boolean scrolled = mNestedChild.dispatchNestedScroll(0, dyConsumed, 0, dyUnconsumed, mParentOffsetInWindow);
-        final int dy = dyUnconsumed + mParentOffsetInWindow[1];
-        Log.d(TAG, "onNestedScroll dyConsumed：" + dyConsumed + " dyUnconsumed:" + dyUnconsumed + " scrolled:" + scrolled + " dy:" + dy);
+        if (type == ViewCompat.TYPE_TOUCH) {
+            /**
+             *  先将滑动扔给父控件处理，父控件结束，当前继续
+             */
+            boolean scrolled = mNestedChild.dispatchNestedScroll(0, dyConsumed, 0, dyUnconsumed, mParentOffsetInWindow);
+            final int dy = dyUnconsumed + mParentOffsetInWindow[1];
+            Log.d(TAG, "onNestedScroll dyConsumed：" + dyConsumed + " dyUnconsumed:" + dyUnconsumed + " scrolled:" + scrolled + " dy:" + dy);
 
-        if (dy != 0) {
-            // dy > 0 向下滚动，dy < 0 向上滚动
-            if ((dy < 0 && canVerticalOverScroll(mRefreshableView, -1)) || (dy > 0 && canVerticalOverScroll(mRefreshableView, 1))) {
-                if (isPullRefreshEnabled() && isReadyForPullDown()) {
-                    pullHeaderLayout((float) (-1 * dy) / OFFSET_RADIO);
-                } else if (isPullLoadEnabled() && isReadyForPullUp()) {
-                    pullFooterLayout((float) (-1 * dy) / OFFSET_RADIO);
+            if (dy != 0) {
+                // dy > 0 向下滚动，dy < 0 向上滚动
+                if ((dy < 0 && canVerticalOverScroll(mRefreshableView, -1)) || (dy > 0 && canVerticalOverScroll(mRefreshableView, 1))) {
+                    if (isPullRefreshEnabled() && isReadyForPullDown()) {
+                        pullHeaderLayout((float) (-1 * dy) / OFFSET_RADIO);
+                    } else if (isPullLoadEnabled() && isReadyForPullUp()) {
+                        pullFooterLayout((float) (-1 * dy) / OFFSET_RADIO);
+                    }
+                    //告诉child消费了多少距离
+                    consumed[1] = dy;
                 }
-                //告诉child消费了多少距离
-                consumed[1] = dy;
             }
         }
     }
@@ -1233,11 +1235,12 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
 
     @Override
     public boolean onNestedPreFling(@NonNull View target, float velocityX, float velocityY) {
-        boolean boo = mNestedChild.dispatchNestedPreFling(velocityX, velocityY) || (velocityY > 0) || startFlingIfNeed(-velocityY);
-        Log.d(TAG, "onNestedPreFling >> boo:" + boo);
-        return boo;
+        boolean boo = startFlingIfNeed(velocityY) || mNestedChild.dispatchNestedPreFling(velocityX, velocityY);
+        Log.d(TAG, "onNestedFling - pre >> velocityY:" + velocityY + " boo:" + boo);
+        return boo ;
     }
 
+    
     @Override
     public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
         boolean boo = mNestedChild.dispatchNestedFling(velocityX, velocityY, consumed);
@@ -1252,7 +1255,15 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
      * @return true 可以拦截 嵌套滚动的 Fling
      */
     protected boolean startFlingIfNeed(float flingVelocity) {
-        // 不要仍的事件
+        /** 处理扔的事件
+         * velocityY >0 向下滚动
+         * velocityY <0 向上滚动
+         */
+        int scrollY = getScrollY();
+        Log.d(TAG, "onNestedFling >> start scrollY:" + scrollY + " mFooterHeight:" + mFooterHeight + " flingVelocity:" + flingVelocity);
+//        if (flingVelocity > 0 && scrollY > 0 && scrollY > mFooterHeight) {
+//            return true;
+//        }
         return false;
     }
 }
