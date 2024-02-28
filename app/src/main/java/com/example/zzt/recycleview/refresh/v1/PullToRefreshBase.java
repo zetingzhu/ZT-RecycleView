@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.NestedScrollingChild3;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
@@ -33,7 +35,7 @@ import java.util.Arrays;
  */
 @SuppressLint("NewApi")
 public abstract class PullToRefreshBase<T extends View> extends LinearLayout
-        implements IPullToRefresh<T>, NestedScrollingParent3 {
+        implements IPullToRefresh<T>, NestedScrollingParent3 /*, NestedScrollingChild3*/ {
     private static final String TAG = PullToRefreshBase.class.getSimpleName();
     /**
      * 回滚的时间
@@ -119,7 +121,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     protected NestedScrollingParentHelper mNestedParent;// 处理之类滑动嵌套工具
     protected boolean mEnableNestedScrolling = true;  //是否启用嵌套滚动功能
     //</editor-fold>
-
+    //<editor-fold desc="仍事件">
+//    private final int[] mScrollOffset = new int[2];
+//    private final int[] mScrollConsumed = new int[2];
+//    private int mNestedYOffset;
+    //</editor-fold>
 
     /**
      * 构造方法
@@ -281,12 +287,6 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
         }
 
         final int action = event.getAction();
-        if (action == MotionEvent.ACTION_CANCEL
-                || action == MotionEvent.ACTION_UP) {
-            mIsHandledTouchEvent = false;
-            return false;
-        }
-
         if (action != MotionEvent.ACTION_DOWN && mIsHandledTouchEvent) {
             return true;
         }
@@ -295,11 +295,25 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
             case MotionEvent.ACTION_DOWN:
                 mLastMotionY = event.getY();
                 mIsHandledTouchEvent = false;
+
+//                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_TOUCH);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                final float deltaY = event.getY() - mLastMotionY;
+                int deltaY = (int) (event.getY() - mLastMotionY);
                 final float absDiff = Math.abs(deltaY);
+
+                //  先询问 Parent 是否消费
+//                boolean boo = dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset, ViewCompat.TYPE_TOUCH);
+//                Log.i(TAG, "dispatchNestedPreScroll 1 boo:" + boo);
+//                if (boo) {
+//                    Log.i(TAG, "onInterceptTouchEvent Move parent deltaY:" + deltaY + " mScrollConsumed:" + Arrays.toString(mScrollConsumed) + " off:" + Arrays.toString(mScrollOffset));
+//                    // 如果 Parent 消费了，就从 deltaY 中减去已经消费掉的部分
+//                    deltaY -= mScrollConsumed[1];
+//                    mNestedYOffset += mScrollOffset[1];
+//                }
+//                Log.i(TAG, "onInterceptTouchEvent Move deltaY:" + deltaY + " mTouchSlop:" + mTouchSlop);
+
                 // 这里有三个条件：
                 // 1，位移差大于mTouchSlop，这是为了防止快速拖动引发刷新
                 // 2，isPullRefreshing()，如果当前正在下拉刷新的话，是允许向上滑动，并把刷新的HeaderView挤上去
@@ -325,7 +339,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
                     }
                 }
                 break;
-
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                mIsHandledTouchEvent = false;
+//                stopNestedScroll(ViewCompat.TYPE_TOUCH);
+                break;
             default:
                 break;
         }
@@ -341,10 +359,25 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
                 mLastMotionY = ev.getY();
                 mIsHandledTouchEvent = handled = isPullRefreshEnabled() && isReadyForPullDown()
                         || isPullLoadEnabled() && isReadyForPullUp();
+
+//                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_TOUCH);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                final float deltaY = ev.getY() - mLastMotionY;
+                final int y = (int) ev.getY();
+                int deltaY = (int) (ev.getY() - mLastMotionY);
+//                //  先询问 Parent 是否消费
+//                boolean boo = dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset, ViewCompat.TYPE_TOUCH);
+//                Log.i(TAG, "dispatchNestedPreScroll 2 boo:" + boo);
+//                if (boo) {
+//                    Log.i(TAG, "Touch Move parent mScrollConsumed:" + mScrollConsumed);
+//                    // 如果 Parent 消费了，就从 deltaY 中减去已经消费掉的部分
+//                    deltaY -= mScrollConsumed[1];
+//                    mNestedYOffset += mScrollOffset[1];
+//                }
+//                Log.d(TAG, "Touch Move y:" + y + " deltaY:" + deltaY);
+
+//                if (Math.abs(deltaY) > 0) {
                 mLastMotionY = ev.getY();
                 if (isPullRefreshEnabled() && isReadyForPullDown()) {
                     pullHeaderLayout(deltaY / OFFSET_RADIO);
@@ -355,6 +388,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
                 } else {
                     mIsHandledTouchEvent = false;
                 }
+//                }
                 break;
 
             case MotionEvent.ACTION_CANCEL:
@@ -386,6 +420,8 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
                         onStateChanged(ILoadingLayout.State.NONE, false);
                     }
                 }
+
+//                stopNestedScroll(ViewCompat.TYPE_TOUCH);
                 break;
 
             default:
@@ -1120,6 +1156,8 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     @Override
     public void onStopNestedScroll(@NonNull View target, int type) {
         mNestedParent.onStopNestedScroll(target);
+        Log.d(TAG, "onStopNestedScroll target：" + target + " type:" + type);
+
         // 回弹处理
         if (isReadyForPullDown()) {
             // 调用刷新
@@ -1144,16 +1182,35 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
         mNestedChild.stopNestedScroll();
     }
 
-    // 在子View调用 dispatchNestedPreScroll 之后，这个方法拿到了回调
+    /**
+     * NestedScrollingChild滑动完之前将滑动值分发给NestedScrollingParent回调此方法
+     * 在子View调用 dispatchNestedPreScroll 之后，这个方法拿到了回调
+     *
+     * @param target   同上
+     * @param dx       水平方向的距离
+     * @param dy       水平方向的距离
+     * @param consumed 返回NestedScrollingParent是否消费部分或全部滑动值
+     */
     @Override
     public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
-        Log.d(TAG, "onNestedPreScroll >>  dy:" + dy + " consumed:" + Arrays.toString(consumed) + " type:" + type);
         /**
          * 子View 滑动前，先分发给父类嵌套滑动
          */
-        mNestedChild.dispatchNestedPreScroll(dx, dy, consumed, null);
+        boolean boo = mNestedChild.dispatchNestedPreScroll(dx, dy, consumed, null);
+        Log.d(TAG, "onNestedPreScroll >>  dy:" + dy + " consumed:" + Arrays.toString(consumed) + " type:" + type + " dispatchNestedPreScroll 3  boo:" + boo);
+
+//        dispatchNestedPreScroll(dx, dy, consumed, null, type);
     }
 
+    /**
+     * NestedScrollingChild滑动完成后将滑动值分发给NestedScrollingParent回调此方法
+     *
+     * @param target       同上
+     * @param dxConsumed   水平方向消费的距离
+     * @param dyConsumed   垂直方向消费的距离
+     * @param dxUnconsumed 水平方向剩余的距离
+     * @param dyUnconsumed 垂直方向剩余的距离
+     */
     @Override
     public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         onNestedScrollInternal(dyConsumed, dyUnconsumed, type, null);
@@ -1179,8 +1236,9 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
              */
             boolean scrolled = mNestedChild.dispatchNestedScroll(0, dyConsumed, 0, dyUnconsumed, mParentOffsetInWindow);
             final int dy = dyUnconsumed + mParentOffsetInWindow[1];
-            Log.d(TAG, "onNestedScroll dyConsumed：" + dyConsumed + " dyUnconsumed:" + dyUnconsumed + " scrolled:" + scrolled + " dy:" + dy);
+            Log.d(TAG, "onNestedScrollInternal dyConsumed：" + dyConsumed + " dyUnconsumed:" + dyUnconsumed + " scrolled:" + scrolled + " dy:" + dy);
 
+//            if (!scrolled && dy != 0) {
             if (dy != 0) {
                 // dy > 0 向下滚动，dy < 0 向上滚动
                 if ((dy < 0 && canVerticalOverScroll(mRefreshableView, -1)) || (dy > 0 && canVerticalOverScroll(mRefreshableView, 1))) {
@@ -1237,10 +1295,10 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
     public boolean onNestedPreFling(@NonNull View target, float velocityX, float velocityY) {
         boolean boo = startFlingIfNeed(velocityY) || mNestedChild.dispatchNestedPreFling(velocityX, velocityY);
         Log.d(TAG, "onNestedFling - pre >> velocityY:" + velocityY + " boo:" + boo);
-        return boo ;
+        return boo;
     }
 
-    
+
     @Override
     public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
         boolean boo = mNestedChild.dispatchNestedFling(velocityX, velocityY, consumed);
@@ -1266,4 +1324,96 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout
 //        }
         return false;
     }
+//
+//    /**
+//     * 表示View开始滑动了,一般是在ACTION_DOWN中调用，如果返回true则表示父布局支持嵌套滑动。
+//     * 这个时候正常情况会触发Parent的 onStartNestedScroll() 方法
+//     */
+//    @Override
+//    public boolean startNestedScroll(int axes, int type) {
+//        return mNestedChild.startNestedScroll(axes);
+//    }
+//
+//    /**
+//     * 一般是在事件结束比如ACTION_UP或者ACTION_CANCEL中调用,告诉父布局滑动结束。
+//     */
+//    @Override
+//    public void stopNestedScroll(int type) {
+//        mNestedChild.stopNestedScroll(type);
+//    }
+//
+//    /**
+//     * 判断当前View是否有嵌套滑动的Parent。
+//     */
+//    @Override
+//    public boolean hasNestedScrollingParent(int type) {
+//        return mNestedChild.hasNestedScrollingParent(type);
+//    }
+//
+//    /**
+//     * 在当前View消费一定的滑动距离之后，可能没有消费完，可以通过调用该方法，把剩下的滚动距离
+//     * 分发给父布局，询问其是否可以再消费。
+//     * dxConsumed：被当前View消费了的水平方向滑动距离
+//     * dyConsumed：被当前View消费了的垂直方向滑动距离
+//     * dxUnconsumed：未被消费的水平滑动距离
+//     * dyUnconsumed：未被消费的垂直滑动距离
+//     * offsetInWindow：可选的输出参数。如果不是null，该方法返回时，会将该视图从该操作
+//     * 之前到该操作完成之后的本地视图坐标中的偏移量封装进该参数中，offsetInWindow[0]水平方向，
+//     * offsetInWindow[1]垂直方向
+//     *
+//     * @return true：表示滚动事件分发成功,fasle: 分发失败
+//     */
+//    @Override
+//    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow, int type) {
+//        boolean boo = mNestedChild.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type);
+//        Log.w(TAG, "dispatchNestedScroll v2 ： boo:" + boo);
+//        return boo;
+//    }
+//
+//    @Override
+//    public void dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow, int type, @NonNull int[] consumed) {
+//        Log.w(TAG, "dispatchNestedScroll v3 ");
+//        mNestedChild.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+//                offsetInWindow, type, consumed);
+//    }
+//
+//    /**
+//     * 在当前View消费滚动距离之前把滑动距离传给父布局。相当于把优先处理权交给Parent
+//     * dx：当前水平方向滑动的距离
+//     * dy：当前垂直方向滑动的距离
+//     * consumed：输出参数，会将Parent消费掉的距离封装进该参数，consumed[0]代表水平方向，consumed[1]代表垂直方向
+//     *
+//     * @return true：代表Parent消费了滚动距离
+//     */
+//    @Override
+//    public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed, @Nullable int[] offsetInWindow, int type) {
+//        boolean boo = mNestedChild.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
+//        Log.w(TAG, "dispatchNestedPreScroll 4 ： boo:" + boo);
+//        return boo;
+//    }
+//
+//    /**
+//     * 将惯性滑动的速度分发给Parent。
+//     * velocityX：表示水平滑动速度
+//     * velocityY：垂直滑动速度
+//     * consumed：true：表示当前View消费了滑动事件，否则传入false
+//     *
+//     * @return true：表示Parent处理了滑动事件
+//     */
+//    @Override
+//    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+//        return mNestedChild.dispatchNestedFling(velocityX, velocityY, consumed);
+//    }
+//
+//    /**
+//     * 在当前View自己处理惯性滑动前，先将滑动事件分发给Parent，一般来说如果想自己处理惯性的滑动事件，
+//     * 就不应该调用该方法给Parent处理。如果给了Parent并且返回true，那表示Parent已经处理了，自己就不应该再做处理。
+//     * 返回false，代表Parent没有处理，但是不代表Parent后面就不用处理了
+//     *
+//     * @return true：表示Parent处理了惯性滑动事件
+//     */
+//    @Override
+//    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+//        return mNestedChild.dispatchNestedPreFling(velocityX, velocityY);
+//    }
 }

@@ -889,6 +889,13 @@ public class ZNestedScrollView extends FrameLayout implements NestedScrollingPar
         return mIsBeingDragged;
     }
 
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d(TAG, "dispatchTouchEvent ev=" + ev.getAction());
+        return super.dispatchTouchEvent(ev);
+    }
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         initVelocityTrackerIfNotExists();

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class PullToRefreshRecyclerViewV2 extends PullToRefreshBaseV2<RecyclerView> {
 
-    private RecyclerView rv;
+    private ZRecyclerView rv;
     /**
      * 用于滑到底部自动加载的Footer
      */
@@ -61,27 +61,8 @@ public class PullToRefreshRecyclerViewV2 extends PullToRefreshBaseV2<RecyclerVie
 
     @Override
     protected RecyclerView createRefreshableView(Context context, AttributeSet attrs) {
-        rv = new RecyclerView(context);
+        rv = new ZRecyclerView(context);
         rv.setLayoutManager(new LinearLayoutManager(context));
-//        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//                Log.d("zzz", "加载状态： isScr:" + isScrollLoadEnabled() + " hasMore:" + hasMoreData() + " newState：" + newState + " pullUp:" + isReadyForPullUp());
-//                if (isScrollLoadEnabled() && hasMoreData()) {
-//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                        if (isReadyForPullUp()) {
-//                            startLoading();
-//                        }
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//            }
-//        });
         return rv;
     }
 
