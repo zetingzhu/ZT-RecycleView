@@ -37,7 +37,7 @@ class ActRecycleViewV9 : AppCompatActivity() {
     private fun initView() {
         pullrv_list = findViewById(R.id.pullrv_list)
         pullrv_list.setPullLoadEnabled(true)
-        pullrv_list.setPullRefreshEnabled(false)
+        pullrv_list.setPullRefreshEnabled(true)
         pullrv_list.setScrollLoadEnabled(true)
         pullrv_list.setOnRefreshListener(object :
             OnRefreshListener<RecyclerView> {
