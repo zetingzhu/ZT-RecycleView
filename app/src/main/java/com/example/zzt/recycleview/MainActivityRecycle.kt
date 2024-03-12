@@ -11,6 +11,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV12
 import com.example.zzt.recycleview.act.ActRecycleViewV13
 import com.example.zzt.recycleview.act.ActRecycleViewV14
 import com.example.zzt.recycleview.act.ActRecycleViewV15
+import com.example.zzt.recycleview.act.ActRecycleViewV17
 import com.example.zzt.recycleview.act.ActRecycleViewV2
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
@@ -82,6 +83,14 @@ class MainActivityRecycle : AppCompatActivity() {
                 "下拉上拉 RV 加个弹性转义 ",
                 "",
                 ActRecycleViewV13::class.java
+            )
+        )
+
+        mListDialog.add(
+            StartActivityDao(
+                "自定义加载更多",
+                "",
+                ActRecycleViewV17::class.java
             )
         )
         StartActivityRecyclerAdapter.setAdapterData(
