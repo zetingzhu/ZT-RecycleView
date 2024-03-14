@@ -9,9 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshBase
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
 import com.example.zzt.recycleview.util.DataListUtil
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable

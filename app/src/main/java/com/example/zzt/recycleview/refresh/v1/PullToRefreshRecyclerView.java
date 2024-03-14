@@ -65,7 +65,7 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                Log.d("zzz", "加载状态： isScr:" + isScrollLoadEnabled() + " hasMore:" + hasMoreData() + " newState：" + newState + " pullUp:" + isReadyForPullUp());
+//                Log.d("zzz", "加载状态： isScr:" + isScrollLoadEnabled() + " hasMore:" + hasMoreData() + " newState：" + newState + " pullUp:" + isReadyForPullUp());
                 if (isScrollLoadEnabled() && hasMoreData()) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         if (isReadyForPullUp()) {
@@ -113,6 +113,19 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
     @Override
     protected boolean isReadyForPullDown() {
         return isFirstItemVisible();
+    }
+
+    public static boolean isRecyclerViewToBottom(RecyclerView recyclerView) {
+        if (recyclerView != null) {
+            RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+            if (manager == null || manager.getItemCount() == 0) {
+                return false;
+            }
+            if (manager instanceof LinearLayoutManager) {
+                return !recyclerView.canScrollVertically(1);
+            }
+        }
+        return false;
     }
 
     @Override

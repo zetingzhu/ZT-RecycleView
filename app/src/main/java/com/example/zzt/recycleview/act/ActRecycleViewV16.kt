@@ -9,12 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
 import com.example.zzt.recycleview.util.DataListUtil
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable
 import com.zzt.decoration.RecycleViewDecorationRemovePos

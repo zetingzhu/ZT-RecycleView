@@ -106,7 +106,7 @@ class ActRecycleViewV9 : AppCompatActivity() {
             addItemDecoration(decoration)
 
             adapter = adapterAsync
-            adapterAsync?.submitList(DataListUtil.getListNum(30))
+            adapterAsync?.submitList(DataListUtil.getListNum(11))
         }
     }
 }

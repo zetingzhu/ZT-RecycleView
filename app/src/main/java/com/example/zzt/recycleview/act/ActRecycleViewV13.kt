@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListenerV2
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshBase
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshBaseV2
 import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView

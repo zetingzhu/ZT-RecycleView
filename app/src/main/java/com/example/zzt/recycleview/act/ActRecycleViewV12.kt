@@ -9,12 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
-import com.example.zzt.recycleview.refresh.v1.OnRefreshListenerV2
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshBase
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshBaseV2
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerView
-import com.example.zzt.recycleview.refresh.v1.PullToRefreshRecyclerViewV2
 import com.example.zzt.recycleview.refresh.v2.NestedOverScrollLayout
 import com.example.zzt.recycleview.util.DataListUtil
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
