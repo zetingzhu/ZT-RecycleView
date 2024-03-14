@@ -1,6 +1,7 @@
 package com.scwang.smart.refresh.layout.simple;
 
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.View;
 
 import com.scwang.smart.refresh.layout.listener.ScrollBoundaryDecider;
@@ -22,10 +23,14 @@ public class SimpleBoundaryDecider implements ScrollBoundaryDecider {
     @Override
     public boolean canRefresh(View content) {
         if (boundary != null) {
+            Log.d("SmartRefreshLayout", "滚动 3 ");
+
             return boundary.canRefresh(content);
         }
         //mActionEvent == null 时 canRefresh 不会动态递归搜索
-        return SmartUtil.canRefresh(content, mActionEvent);
+        boolean crboo = SmartUtil.canRefresh(content, mActionEvent);
+        Log.d("SmartRefreshLayout", "滚动 4 ：" + crboo);
+        return crboo;
     }
 
     @Override

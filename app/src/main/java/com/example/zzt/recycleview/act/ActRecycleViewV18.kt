@@ -1,8 +1,6 @@
 package com.example.zzt.recycleview.act
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -11,27 +9,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
+import com.example.zzt.recycleview.refresh.v1.OnRefreshListener
 import com.example.zzt.recycleview.util.DataListUtil
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.ClassicsHeader
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable
 import com.zzt.decoration.RecycleViewDecorationRemovePos
 
 
-class ActRecycleViewV15 : AppCompatActivity() {
+class ActRecycleViewV18 : AppCompatActivity() {
     lateinit var rv_list: RecyclerView
     lateinit var rv_list_top: RecyclerView
     private var mAdapterV1: AdapterH? = null
     var topListDialog: MutableList<String>? = null
     var topListener: BtnHorizontalRecyclerAdapter.OnItemClickListener<String>? = null
     var adapterAsync: AdapterAsync? = null
-    var mHandle: Handler? = null
+
+    var refL_coord: SmartRefreshLayout? = null
+    var refreshLayout: SmartRefreshLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_act_recycle_view_v15)
-        mHandle = Handler(Looper.getMainLooper())
+        setContentView(R.layout.activity_act_recycle_view_v18)
         initView()
 
         initViewParent()
@@ -39,21 +41,36 @@ class ActRecycleViewV15 : AppCompatActivity() {
 
 
     private fun initView() {
-        val refreshLayout = findViewById<View>(R.id.refreshLayout) as RefreshLayout
-        refreshLayout.setRefreshHeader(ClassicsHeader(this))
-        refreshLayout.setRefreshFooter(ClassicsFooter(this))
-        refreshLayout.setOnRefreshListener { refreshlayout ->
-//            refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
-            mHandle?.postDelayed({
-                refreshlayout.finishRefresh()
-            }, 2000L)
+        refL_coord = findViewById(R.id.refL_coord)
+        refL_coord?.setRefreshHeader(ClassicsHeader(this))
+        refL_coord?.setRefreshFooter(ClassicsFooter(this))
+        refL_coord?.setEnableRefresh(true)
+        refL_coord?.setEnableLoadMore(false);
+        refL_coord?.setOnRefreshListener { refreshlayout ->
+            refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
         }
-        refreshLayout.setOnLoadMoreListener { refreshlayout ->
+        refL_coord?.setOnLoadMoreListener { refreshlayout ->
             refreshlayout.finishLoadMore(2000 /*,false*/) //传入false表示加载失败
-            mHandle?.postDelayed({
-                refreshlayout.finishRefresh()
-            }, 2000L)
         }
+
+
+
+        refreshLayout = findViewById(R.id.refreshLayout)
+        refreshLayout?.setRefreshHeader(ClassicsHeader(this))
+        refreshLayout?.setRefreshFooter(ClassicsFooter(this))
+        refreshLayout?.setEnableRefresh(false)
+        refreshLayout?.setEnableLoadMore(true)
+        refreshLayout?.setOnRefreshListener { refreshlayout ->
+            refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
+        }
+        refreshLayout?.setOnLoadMoreListener { refreshlayout ->
+            refreshlayout.finishLoadMore(2000 /*,false*/) //传入false表示加载失败
+        }
+
+
+
+
+
         rv_list_top = findViewById(R.id.rv_list_top)
         rv_list = findViewById(R.id.rv_list)
 
@@ -97,7 +114,7 @@ class ActRecycleViewV15 : AppCompatActivity() {
         rv_list.apply {
             adapterAsync = AdapterAsync()
 
-            layoutManager = LinearLayoutManager(this@ActRecycleViewV15)
+            layoutManager = LinearLayoutManager(this@ActRecycleViewV18)
             //添加自定义分割线
             val decoration = RecycleViewDecorationRemovePos(
                 this.context,
@@ -113,65 +130,8 @@ class ActRecycleViewV15 : AppCompatActivity() {
             addItemDecoration(decoration)
 
             adapter = adapterAsync
-            adapterAsync?.submitList(DataListUtil.getListNum(30))
+            adapterAsync?.submitList(DataListUtil.getListNum(50))
         }
 
-
-
-        topListener = object : BtnHorizontalRecyclerAdapter.OnItemClickListener<String> {
-
-            override fun onItemClick(itemView: View?, position: Int, data: String?) {
-                when (position) {
-                    0 -> {
-                        adapterAsync?.submitList(DataListUtil.getList100())
-                    }
-
-                    1 -> {
-                        adapterAsync?.submitList(DataListUtil.getList100EvenNumber())
-                    }
-
-                    2 -> {
-                        adapterAsync?.submitList(DataListUtil.getList100Random())
-                    }
-
-                    3 -> {
-                        adapterAsync?.submitList(DataListUtil.getList100RandomBG())
-                    }
-
-                    4 -> {
-                        adapterAsync?.submitList(mutableListOf())
-                    }
-
-                    5 -> {
-                        adapterAsync?.submitList(DataListUtil.getList100Sort())
-                    }
-
-                    6 -> {
-                        adapterAsync?.submitList(
-                            DataListUtil.getList100BySortV1(
-                                adapterAsync?.getData()?.toMutableList()
-                            )
-                        )
-                    }
-
-                    7 -> {
-                        adapterAsync?.submitList(
-                            DataListUtil.getList100BySortV2(
-                                adapterAsync?.getData()?.toMutableList()
-                            )
-                        ) { rv_list.scrollToPosition(0) }
-                    }
-
-                    8 -> {
-                        adapterAsync?.submitList(
-                            DataListUtil.getList100BySortV3(
-                                adapterAsync?.getData()?.toMutableList()
-                            )
-                        )
-                    }
-                }
-            }
-        }
-        BtnHorizontalRecyclerAdapter.setAdapterData(rv_list_top, topListDialog, topListener)
     }
 }

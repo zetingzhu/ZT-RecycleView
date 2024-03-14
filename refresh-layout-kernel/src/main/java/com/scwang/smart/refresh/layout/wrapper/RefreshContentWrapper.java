@@ -3,6 +3,7 @@ package com.scwang.smart.refresh.layout.wrapper;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -177,6 +178,9 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
 
     @Override
     public boolean canRefresh() {
+
+        Log.d("SmartRefreshLayout", "滚动 2 ：mEnableRefresh:" + mEnableRefresh + " mBoundaryAdapter.canRefresh(mContentView):" + (mBoundaryAdapter.canRefresh(mContentView)));
+
         return mEnableRefresh && mBoundaryAdapter.canRefresh(mContentView);
     }
 

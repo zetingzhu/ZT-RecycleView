@@ -1018,6 +1018,9 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
                 if (!mIsBeingDragged && !mEnableDisallowIntercept && mDragDirection != 'h' && mRefreshContent != null) {//没有拖动之前，检测  canRefresh canLoadMore 来开启拖动
                     if (mDragDirection == 'v' || (Math.abs(dy) >= mTouchSlop && Math.abs(dx) < Math.abs(dy))) {//滑动允许最大角度为45度
                         mDragDirection = 'v';
+
+                        Log.d(TAG, "滚动 1 ：dy:" + dy + " mSpinner:" + mSpinner + " mEnableOverScrollDrag:" + mEnableOverScrollDrag + " mEnableRefresh:" + mEnableRefresh + " mRefreshContent.canRefresh():" + (mRefreshContent.canRefresh()));
+
                         if (dy > 0 && (mSpinner < 0 || ((mEnableOverScrollDrag || mEnableRefresh) && mRefreshContent.canRefresh()))) {
                             mIsBeingDragged = true;
                             mTouchY = touchY - mTouchSlop;//调整 mTouchSlop 偏差
@@ -1025,6 +1028,9 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
                             mIsBeingDragged = true;
                             mTouchY = touchY + mTouchSlop;//调整 mTouchSlop 偏差
                         }
+
+                        Log.d(TAG, "滚动 1 ：dy:" + dy + " mSpinner:" + mSpinner + " mEnableOverScrollDrag:" + mEnableOverScrollDrag + " mEnableRefresh:" + mEnableRefresh + " mRefreshContent.canRefresh():" + (mRefreshContent.canRefresh()));
+
                         if (mIsBeingDragged) {
                             dy = touchY - mTouchY;//调整 mTouchSlop 偏差 重新计算 dy
                             if (mSuperDispatchTouchEvent) {//如果父类拦截了事件，发送一个取消事件通知
