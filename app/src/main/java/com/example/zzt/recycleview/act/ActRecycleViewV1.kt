@@ -1,6 +1,7 @@
 package com.example.zzt.recycleview.act
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterV
 import com.example.zzt.recycleview.util.DataListUtil
+import com.example.zzt.recycleview.widget.TextViewRoundClick
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable
 import com.zzt.decoration.RecycleViewDecorationRemovePos
@@ -53,6 +55,11 @@ open class ActRecycleViewV1 : AppCompatActivity() {
     }
 
     private fun initView() {
+
+        findViewById<TextViewRoundClick>(R.id.btn_sss).setOnClickListener {
+            Log.d("TextViewRoundClick", "建仓事件触发了")
+        }
+
         rv_list = findViewById(R.id.rv_list)
         rv_list_top = findViewById(R.id.rv_list_top)
 
