@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ZTRecycleView">
+        <activity
+            android:name="com.zzt.act.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name="com.zzt.act.PinnedHeaderActivity"
+            android:label="@string/label_pinned_header" />
+
+        <activity
+            android:name="com.zzt.act.ActRvVerV1"
+            android:label="@string/label_divider" />
+
+        <activity
+            android:name="com.zzt.act.ActRvGridV1"
+            android:label="@string/label_offsets" />
+
+        <activity
+            android:name="com.zzt.act.ShaderActivity"
+            android:label="@string/label_shader" />
+        <activity android:name="com.zzt.act.ActRvVerV2" />
+        <activity android:name="com.zzt.act.ActRvGridV2" />
+        <activity android:name="com.zzt.act.ActRvGridV3" />
+        <activity android:name="com.zzt.act.ActRvVerV3" />
+        <activity android:name="com.zzt.act.ActRvGridV4" />
+    </application>
+
+</manifest>

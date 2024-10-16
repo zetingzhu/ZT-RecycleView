@@ -23,6 +23,8 @@ import com.example.zzt.recycleview.act.ActRecycleViewV8
 import com.example.zzt.recycleview.act.ActRvViewV6
 import com.example.zzt.recycleview.divider.DividerAct
 import com.example.zzt.recycleview.act.ActRecycleViewV9
+import com.example.zzt.recycleview.divider.DividerActV2
+import com.example.zzt.recycleview.divider.DividerActV3
 import com.zzt.adapter.StartActivityRecyclerAdapter
 import com.zzt.entity.StartActivityDao
 
@@ -53,6 +55,8 @@ class MainActivityRecycle : AppCompatActivity() {
         mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
         mListDialog.add(StartActivityDao("底部自定义分割线", "", ActRvViewV6::class.java))
         mListDialog.add(StartActivityDao("横竖分割线", "", DividerAct::class.java))
+        mListDialog.add(StartActivityDao("横竖分割线 2", "第二部分", DividerActV2::class.java))
+        mListDialog.add(StartActivityDao("横竖分割线 3", "第三部分", DividerActV3::class.java))
         mListDialog.add(StartActivityDao("添加移除动画", "", ActRecycleViewV7::class.java))
         mListDialog.add(StartActivityDao("头部悬浮固定", "", ActRecycleViewV8::class.java))
         mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
@@ -94,7 +98,9 @@ class MainActivityRecycle : AppCompatActivity() {
         )
         mListDialog.add(
             StartActivityDao(
-                "下拉上拉 SmartRefreshLayout CoordinatorLayout 使用自定义 MyBehavior ", "", ActRecycleViewV18::class.java
+                "下拉上拉 SmartRefreshLayout CoordinatorLayout 使用自定义 MyBehavior ",
+                "",
+                ActRecycleViewV18::class.java
             )
         )
         mListDialog.add(

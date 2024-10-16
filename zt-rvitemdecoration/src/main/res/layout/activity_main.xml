@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/pinned_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_pinned_header"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/shader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/label_shader"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/linear_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/label_divider"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_normal_decor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="普通分割线"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/btn_ver_v3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="垂直分割线 3"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/grid_offsets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/label_offsets"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/grid_dram_offsets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Grid 间隔图片"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/grid_v3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Grid 第三个"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/grid_v4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Grid 第四个"
+        android:textAllCaps="false" />
+</LinearLayout>
