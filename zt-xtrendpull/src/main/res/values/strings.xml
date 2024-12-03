@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ZT-XtrendPull</string>
+
+    <string name="s19_1">下拉可以刷新</string>
+    <string name="s19_2">松开后刷新</string>
+    <string name="s19_3">加载中</string>
+    <string name="s19_4">最后更新：</string>
+
+</resources>

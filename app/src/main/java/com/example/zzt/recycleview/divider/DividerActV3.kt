@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dinuscxj.itemdecoration.ShaderItemDecoration
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterH
 import com.example.zzt.recycleview.adapter.AdapterV

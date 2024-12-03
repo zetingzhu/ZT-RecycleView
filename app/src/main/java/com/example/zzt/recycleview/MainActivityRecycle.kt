@@ -14,7 +14,10 @@ import com.example.zzt.recycleview.act.ActRecycleViewV15
 import com.example.zzt.recycleview.act.ActRecycleViewV17
 import com.example.zzt.recycleview.act.ActRecycleViewV16
 import com.example.zzt.recycleview.act.ActRecycleViewV18
+import com.example.zzt.recycleview.act.ActRecycleViewV19
 import com.example.zzt.recycleview.act.ActRecycleViewV2
+import com.example.zzt.recycleview.act.ActRecycleViewV20
+import com.example.zzt.recycleview.act.ActRecycleViewV21
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
 import com.example.zzt.recycleview.act.ActRecycleViewV5
@@ -105,7 +108,25 @@ class MainActivityRecycle : AppCompatActivity() {
         )
         mListDialog.add(
             StartActivityDao(
+                "下拉上拉 SmartRefreshLayout CoordinatorLayout 使用测试系统的 Behavior ",
+                "",
+                ActRecycleViewV21::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
                 "自定义加载更多", "", ActRecycleViewV17::class.java
+            )
+        )
+
+        mListDialog.add(
+            StartActivityDao(
+                "自定义ScrollView", "测试发现这个视图不显示", ActRecycleViewV19::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
+                "自定义ScrollView 20", "测试发现这个视图不显示", ActRecycleViewV20::class.java
             )
         )
         StartActivityRecyclerAdapter.setAdapterData(

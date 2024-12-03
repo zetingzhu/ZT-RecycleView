@@ -89,6 +89,15 @@
         <activity
             android:name=".act.ActRecycleViewV18"
             android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV19"
+            android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV20"
+            android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV21"
+            android:exported="false" />
     </application>
 
 </manifest>

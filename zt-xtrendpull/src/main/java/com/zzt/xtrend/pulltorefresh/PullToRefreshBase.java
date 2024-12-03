@@ -1,15 +1,13 @@
-package com.example.zzt.recycleview.refresh.v1;
+package com.zzt.xtrend.pulltorefresh;
+
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.nfc.Tag;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -17,12 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
-import com.example.zzt.recycleview.refresh.v1.ILoadingLayout.State;
 
 /**
  * 这个实现了下拉刷新和上拉加载更多的功能
@@ -34,6 +27,29 @@ import com.example.zzt.recycleview.refresh.v1.ILoadingLayout.State;
 @SuppressLint("NewApi")
 public abstract class PullToRefreshBase<T extends View> extends LinearLayout implements IPullToRefresh<T> {
     private static final String TAG = PullToRefreshBase.class.getSimpleName();
+
+    /**
+     * 定义了下拉刷新和上拉加载更多的接口。
+     *
+     * @author Li Hong
+     * @since 2013-7-29
+     */
+    public interface OnRefreshListener<V extends View> {
+
+        /**
+         * 下拉松手后会被调用
+         *
+         * @param refreshView 刷新的View
+         */
+        void onPullDownToRefresh(final PullToRefreshBase<V> refreshView);
+
+        /**
+         * 加载更多时会被调用或上拉时调用
+         *
+         * @param refreshView 刷新的View
+         */
+        void onPullUpToRefresh(final PullToRefreshBase<V> refreshView);
+    }
 
     /**
      * 回滚的时间
@@ -94,11 +110,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
     /**
      * 下拉的状态
      */
-    private State mPullDownState = State.NONE;
+    private ILoadingLayout.State mPullDownState = ILoadingLayout.State.NONE;
     /**
      * 上拉的状态
      */
-    private State mPullUpState = State.NONE;
+    private ILoadingLayout.State mPullUpState = ILoadingLayout.State.NONE;
     /**
      * 可以下拉刷新的View
      */
@@ -111,6 +127,10 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
      * 可刷新View的包装布局
      */
     private FrameLayout mRefreshableViewWrapper;
+
+    public static final int REFRESH_ACTION_UP = 1;
+    public static final int REFRESH_ACTION_DOWN = 2;
+    public int refreshAction = 0;// 添加一个刷新动作 1 下拉，2上拉
 
     /**
      * 构造方法
@@ -178,7 +198,6 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
         });
     }
 
-
     /**
      * 设置 RecyclerView 滑动到底部自动触发加载更多
      */
@@ -187,33 +206,20 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             ((RecyclerView) mRefreshableView).addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    Log.d(TAG, "加载更多 1  a:" + (newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING)
-                            + " b:" + (recyclerView.getAdapter() != null && recyclerView.getAdapter().getItemCount() >= 0)
-//                            + " c:" + isRecyclerViewToBottom(recyclerView)
-                            + " d:" + isReadyForPullUp()
-                            + " e:" + isReadyForPullDown());
+//                    Log.d(TAG, "加载更多 1  a:" + (newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING)
+//                            + " b:" + (recyclerView.getAdapter() != null && recyclerView.getAdapter().getItemCount() >= 0)
+////                            + " c:" + isRecyclerViewToBottom(recyclerView)
+//                            + " d:" + isReadyForPullUp()
+//                            + " e:" + isReadyForPullDown()
+//                            + " f:" + mFooterHeight);
 
-                    if ((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING)
-                            && !isReadyForPullDown()  /*列表不在最顶部，在顶部说明列表不满一屏幕，不出发加载更多*/
-                            && isReadyForPullUp()  /*列表在最底部部*/) {
+                    if ((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING) && !isReadyForPullDown()  /*列表不在最顶部，在顶部说明列表不满一屏幕，不出发加载更多*/ && isReadyForPullUp()  /*列表在最底部部*/ && isPullLoadEnabled() /*列表有上拉加载更多功能*/) {
                         pullFooterLayout(-1 * mFooterHeight);
+                        startLoading();
                     }
                 }
             });
         }
-    }
-
-    public static boolean isRecyclerViewToBottom(RecyclerView recyclerView) {
-        if (recyclerView != null) {
-            RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
-            if (manager == null || manager.getItemCount() == 0) {
-                return false;
-            }
-            if (manager instanceof LinearLayoutManager) {
-                return !recyclerView.canScrollVertically(1);
-            }
-        }
-        return false;
     }
 
     /**
@@ -316,17 +322,22 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             case MotionEvent.ACTION_MOVE:
                 final float deltaY = event.getY() - mLastMotionY;
                 final float absDiff = Math.abs(deltaY);
-
-                Log.d("Log", "ScrollChangeListener onInterceptTouchEvent ACTION_MOVE >> deltaY:" + deltaY + " absDiff:" + absDiff);
-
+                if (absDiff > mTouchSlop) {
+                    if (refreshAction == 0) {
+                        if (deltaY > 0) {
+                            refreshAction = REFRESH_ACTION_UP;
+                        } else {
+                            refreshAction = REFRESH_ACTION_DOWN;
+                        }
+//                    Log.i(TAG, "拉动数据 设置状态 deltaY：" + deltaY + " refreshAction：" + refreshAction);
+                    }
+                }
                 // 这里有三个条件：
                 // 1，位移差大于mTouchSlop，这是为了防止快速拖动引发刷新
                 // 2，isPullRefreshing()，如果当前正在下拉刷新的话，是允许向上滑动，并把刷新的HeaderView挤上去
                 // 3，isPullLoading()，理由与第2条相同
                 if (absDiff > mTouchSlop || isPullRefreshing() || isPullLoading()) {
                     mLastMotionY = event.getY();
-                    Log.d("Log", "ScrollChangeListener onInterceptTouchEvent ACTION_MOVE >> y:" + mLastMotionY);
-
                     // 第一个显示出来，Header已经显示或拉下
                     if (isPullRefreshEnabled() && isReadyForPullDown()) {
                         // 1，Math.abs(getScrollY()) >
@@ -340,9 +351,18 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
                         if (mIsHandledTouchEvent) {
                             mRefreshableView.onTouchEvent(event);
                         }
+                        if (!mIsHandledTouchEvent) {
+                            onStateChanged(ILoadingLayout.State.NONE, true);
+                        }
                     } else if (isPullLoadEnabled() && isReadyForPullUp()) {
                         // 原理如上
                         mIsHandledTouchEvent = (Math.abs(getScrollYValue()) > 0 || deltaY < -0.5f);
+                        if (!mIsHandledTouchEvent) {
+                            onStateChanged(ILoadingLayout.State.NONE, false);
+                        }
+                    } else {
+                        onStateChanged(ILoadingLayout.State.NONE, true);
+                        onStateChanged(ILoadingLayout.State.NONE, false);
                     }
                 }
                 break;
@@ -366,9 +386,6 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             case MotionEvent.ACTION_MOVE:
                 final float deltaY = ev.getY() - mLastMotionY;
                 mLastMotionY = ev.getY();
-
-                Log.d("Log", "ScrollChangeListener onTouchEvent ACTION_MOVE >> deltaY:" + deltaY + " mLastMotionY:" + mLastMotionY);
-
                 if (isPullRefreshEnabled() && isReadyForPullDown()) {
                     pullHeaderLayout(deltaY / OFFSET_RADIO);
                     handled = true;
@@ -382,29 +399,32 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+//            Log.d(TAG , "拉动数据 3  mPullUpState:"+mPullUpState +" mPullDownState:"+mPullDownState);
                 if (mIsHandledTouchEvent) {
                     mIsHandledTouchEvent = false;
                     // 当第一个显示出来时
                     if (isReadyForPullDown()) {
                         // 调用刷新
-                        if (mPullRefreshEnabled && (mPullDownState == State.RELEASE_TO_REFRESH)) {
+                        if (mPullRefreshEnabled
+                                && (mPullDownState == ILoadingLayout.State.RELEASE_TO_REFRESH)) {
                             startRefreshing();
                             handled = true;
                         } else {
-                            onStateChanged(State.NONE, false);
+                            onStateChanged(ILoadingLayout.State.NONE, false);
                         }
                         resetHeaderLayout();
                     } else if (isReadyForPullUp()) {
                         // 加载更多
-                        if (isPullLoadEnabled() && (mPullUpState == State.RELEASE_TO_REFRESH)) {
+                        if (isPullLoadEnabled()
+                                && (mPullUpState == ILoadingLayout.State.RELEASE_TO_REFRESH)) {
                             startLoading();
                             handled = true;
                         } else {
-                            onStateChanged(State.NONE, false);
+                            onStateChanged(ILoadingLayout.State.NONE, false);
                         }
                         resetFooterLayout();
                     } else {
-                        onStateChanged(State.NONE, false);
+                        onStateChanged(ILoadingLayout.State.NONE, false);
                     }
                 }
                 break;
@@ -454,8 +474,8 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
     @Override
     public void onPullDownRefreshComplete() {
         if (isPullRefreshing()) {
-            mPullDownState = State.RESET;
-            onStateChanged(State.RESET, true);
+            mPullDownState = ILoadingLayout.State.RESET;
+            onStateChanged(ILoadingLayout.State.RESET, true);
 
             // 回滚动有一个时间，我们在回滚完成后再设置状态为normal
             // 在将LoadingLayout的状态设置为normal之前，我们应该禁止
@@ -466,7 +486,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
                 @Override
                 public void run() {
                     setInterceptTouchEventEnabled(true);
-                    mHeaderLayout.setState(State.RESET);
+                    mHeaderLayout.setState(ILoadingLayout.State.RESET);
                 }
             }, getSmoothScrollDuration());
 
@@ -478,14 +498,14 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
     @Override
     public void onPullUpRefreshComplete() {
         if (isPullLoading()) {
-            mPullUpState = State.RESET;
-            onStateChanged(State.RESET, false);
+            mPullUpState = ILoadingLayout.State.RESET;
+            onStateChanged(ILoadingLayout.State.RESET, false);
 
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     setInterceptTouchEventEnabled(true);
-                    mFooterLayout.setState(State.RESET);
+                    mFooterLayout.setState(ILoadingLayout.State.RESET);
                 }
             }, getSmoothScrollDuration());
 
@@ -689,9 +709,9 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
         int scrollY = Math.abs(getScrollYValue());
         if (isPullRefreshEnabled() && !isPullRefreshing()) {
             if (scrollY > mHeaderHeight) {
-                mPullDownState = State.RELEASE_TO_REFRESH;
+                mPullDownState = ILoadingLayout.State.RELEASE_TO_REFRESH;
             } else {
-                mPullDownState = State.PULL_TO_REFRESH;
+                mPullDownState = ILoadingLayout.State.PULL_TO_REFRESH;
             }
 
             mHeaderLayout.setState(mPullDownState);
@@ -710,10 +730,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             setScrollTo(0, 0);
             return;
         }
-        Log.d(TAG, ">>>> 滑动比例：" + getScrollYValue() + "  delta:" + delta + "  state:" + mPullUpState);
+
         if (getScrollYValue() < Math.abs(mFooterHeight)) {
             setScrollBy(0, -(int) delta);
         }
+
         if (null != mFooterLayout && 0 != mFooterHeight) {
             float scale = Math.abs(getScrollYValue()) / (float) mFooterHeight;
             mFooterLayout.onPull(scale);
@@ -722,9 +743,9 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
         int scrollY = Math.abs(getScrollYValue());
         if (isPullLoadEnabled() && !isPullLoading()) {
             if (scrollY > mFooterHeight) {
-                mPullUpState = State.RELEASE_TO_REFRESH;
+                mPullUpState = ILoadingLayout.State.RELEASE_TO_REFRESH;
             } else {
-                mPullUpState = State.PULL_TO_REFRESH;
+                mPullUpState = ILoadingLayout.State.PULL_TO_REFRESH;
             }
             mFooterLayout.setState(mPullUpState);
             onStateChanged(mPullUpState, false);
@@ -775,7 +796,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
      * @return true正在刷新，否则false
      */
     protected boolean isPullRefreshing() {
-        return (mPullDownState == State.REFRESHING);
+        return (mPullDownState == ILoadingLayout.State.REFRESHING);
     }
 
     /**
@@ -784,7 +805,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
      * @return true正在加载更多，否则false
      */
     protected boolean isPullLoading() {
-        return (mPullUpState == State.REFRESHING);
+        return (mPullUpState == ILoadingLayout.State.REFRESHING);
     }
 
     /**
@@ -796,11 +817,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             return;
         }
 
-        mPullDownState = State.REFRESHING;
-        onStateChanged(State.REFRESHING, true);
+        mPullDownState = ILoadingLayout.State.REFRESHING;
+        onStateChanged(ILoadingLayout.State.REFRESHING, true);
 
         if (null != mHeaderLayout) {
-            mHeaderLayout.setState(State.REFRESHING);
+            mHeaderLayout.setState(ILoadingLayout.State.REFRESHING);
         }
 
         if (null != mRefreshListener) {
@@ -823,11 +844,11 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
             return;
         }
 
-        mPullUpState = State.REFRESHING;
-        onStateChanged(State.REFRESHING, false);
+        mPullUpState = ILoadingLayout.State.REFRESHING;
+        onStateChanged(ILoadingLayout.State.REFRESHING, false);
 
         if (null != mFooterLayout) {
-            mFooterLayout.setState(State.REFRESHING);
+            mFooterLayout.setState(ILoadingLayout.State.REFRESHING);
         }
 
         if (null != mRefreshListener) {
@@ -847,7 +868,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
      * @param state      状态
      * @param isPullDown 是否向下
      */
-    protected void onStateChanged(State state, boolean isPullDown) {
+    protected void onStateChanged(ILoadingLayout.State state, boolean isPullDown) {
 
     }
 
@@ -1033,6 +1054,9 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
         }
     }
 
+    public int getFooterHeight() {
+        return mFooterHeight;
+    }
     /*public static enum State {
 
      *//**
