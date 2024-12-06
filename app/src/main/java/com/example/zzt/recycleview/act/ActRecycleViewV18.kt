@@ -1,18 +1,26 @@
 package com.example.zzt.recycleview.act
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterAsync
 import com.example.zzt.recycleview.adapter.AdapterH
+import com.example.zzt.recycleview.behavior.MyBehavior
+import com.example.zzt.recycleview.smart.SmartClassicsHeaderLayout
 import com.example.zzt.recycleview.util.DataListUtil
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.scwang.smart.refresh.layout.api.RefreshKernel
+import com.scwang.smart.refresh.layout.listener.CoordinatorLayoutListener
+import com.scwang.smart.refresh.layout.listener.MyBehaviorListener
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
 import com.zzt.decoration.DividerDrawable
 import com.zzt.decoration.RecycleViewDecorationRemovePos
@@ -27,7 +35,7 @@ class ActRecycleViewV18 : AppCompatActivity() {
     var adapterAsync: AdapterAsync? = null
 
     var refL_coord: SmartRefreshLayout? = null
-    var refreshLayout: SmartRefreshLayout? = null
+    var ll_top_behavior: LinearLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,35 +47,44 @@ class ActRecycleViewV18 : AppCompatActivity() {
 
 
     private fun initView() {
+        ll_top_behavior = findViewById(R.id.ll_top_behavior)
         refL_coord = findViewById(R.id.refL_coord)
         refL_coord?.setRefreshHeader(ClassicsHeader(this))
+        refL_coord?.setRefreshHeader(SmartClassicsHeaderLayout(this))
         refL_coord?.setRefreshFooter(ClassicsFooter(this))
         refL_coord?.setEnableRefresh(true)
-        refL_coord?.setEnableLoadMore(false);
+        refL_coord?.setEnableLoadMore(true)
+        refL_coord?.setMyBehaviorListener(object : MyBehaviorListener {
+            override fun checkCoordinatorLayout(
+                content: View?, kernel: RefreshKernel?, listener: CoordinatorLayoutListener?
+            ) {
+                kernel?.refreshLayout?.setEnableNestedScroll(false)
+                //跟单标题滑动到顶部
+                val behavior: MyBehavior? =
+                    (ll_top_behavior?.getLayoutParams() as CoordinatorLayout.LayoutParams?)?.behavior as MyBehavior?
+
+                behavior?.addOnOffsetChangedListener(object : MyBehavior.OnScrollChangeListener {
+                    override fun onScrollChange(
+                        headerView: View?,
+                        scrollingView: View?,
+                        offsetDy: Int,
+                        leftOffsetDy: Int
+                    ) {
+//                        Log.d(
+//                            "SmartRefreshLayout",
+//                            "底部设置  off: $offsetDy leftOffsetDy:$leftOffsetDy"
+//                        )
+                        listener?.onCoordinatorUpdate(offsetDy >= 0, leftOffsetDy <= 0);
+                    }
+                })
+            }
+        })
         refL_coord?.setOnRefreshListener { refreshlayout ->
             refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
         }
         refL_coord?.setOnLoadMoreListener { refreshlayout ->
             refreshlayout.finishLoadMore(2000 /*,false*/) //传入false表示加载失败
         }
-
-
-
-        refreshLayout = findViewById(R.id.refreshLayout)
-        refreshLayout?.setRefreshHeader(ClassicsHeader(this))
-        refreshLayout?.setRefreshFooter(ClassicsFooter(this))
-        refreshLayout?.setEnableRefresh(false)
-        refreshLayout?.setEnableLoadMore(true)
-        refreshLayout?.setOnRefreshListener { refreshlayout ->
-            refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
-        }
-        refreshLayout?.setOnLoadMoreListener { refreshlayout ->
-            refreshlayout.finishLoadMore(2000 /*,false*/) //传入false表示加载失败
-        }
-
-
-
-
 
         rv_list_top = findViewById(R.id.rv_list_top)
         rv_list = findViewById(R.id.rv_list)
@@ -115,8 +132,7 @@ class ActRecycleViewV18 : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ActRecycleViewV18)
             //添加自定义分割线
             val decoration = RecycleViewDecorationRemovePos(
-                this.context,
-                RecycleViewDecorationRemovePos.VERTICAL_TOB_BOTTOM
+                this.context, RecycleViewDecorationRemovePos.VERTICAL_TOB_BOTTOM
             )
             decoration.setDrawable(
                 DividerDrawable(

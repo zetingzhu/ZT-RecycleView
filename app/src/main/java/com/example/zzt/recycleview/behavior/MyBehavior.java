@@ -2,6 +2,7 @@ package com.example.zzt.recycleview.behavior;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ScrollerCompat;
@@ -16,6 +18,9 @@ import androidx.core.widget.ScrollerCompat;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lin on 2018/4/26.
@@ -50,24 +55,18 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
     @Override
     public boolean onMeasureChild(CoordinatorLayout parent, View child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
         int childLpHeight = child.getLayoutParams().height;
-        if (childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT
-                || childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+        if (childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT || childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
             int availableHeight = View.MeasureSpec.getSize(parentHeightMeasureSpec);
             if (availableHeight == 0) {
                 // If the measure spec doesn't specify a size, use the current height
                 availableHeight = parent.getHeight();
             }
             int height = availableHeight;
-            if (childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT)
-                height -= getMinOffset(child);
-            int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height,
-                    childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT
-                            ? View.MeasureSpec.EXACTLY
-                            : View.MeasureSpec.AT_MOST);
+            if (childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT) height -= getMinOffset(child);
+            int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height, childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT ? View.MeasureSpec.EXACTLY : View.MeasureSpec.AT_MOST);
 
             // Now measure the scrolling view with the correct height
-            parent.onMeasureChild(child, parentWidthMeasureSpec,
-                    widthUsed, heightMeasureSpec, heightUsed);
+            parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed, heightMeasureSpec, heightUsed);
             return true;
         }
         return false;
@@ -225,8 +224,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
     }
 
     int setHeaderTopBottomOffset(CoordinatorLayout parent, View header, int newOffset) {
-        return setHeaderTopBottomOffset(parent, header, newOffset,
-                Integer.MIN_VALUE, Integer.MAX_VALUE);
+        return setHeaderTopBottomOffset(parent, header, newOffset, getMinOffset(header), getMaxOffset(header));
     }
 
     int setHeaderTopBottomOffset(CoordinatorLayout parent, View header, int newOffset, int minOffset, int maxOffset) {
@@ -247,8 +245,13 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
 
 //        Log.d("SmartRefreshLayout", " >>> curOffset:" + curOffset + " consumed:" + consumed + " header:" + header.getHeight() + " newOffset:" + newOffset + " minOffset:" + minOffset + " maxOffset:" + maxOffset + "  TopOff:" + getTopBottomOffsetForScrollingSibling());
 
-        if (mOnScrollChangeListener != null) {
-            mOnScrollChangeListener.onScrollChange(header, curOffset);
+        if (scrollListeners != null) {
+            for (int i = 0, z = scrollListeners.size(); i < z; i++) {
+                final OnScrollChangeListener listener = scrollListeners.get(i);
+                if (listener != null) {
+                    listener.onScrollChange(header, scrollingView, newOffset, minOffset - newOffset);
+                }
+            }
         }
 
         return consumed;
@@ -258,14 +261,11 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
         return getTopAndBottomOffset();
     }
 
-    final int scroll(CoordinatorLayout coordinatorLayout, View header,
-                     int dy, int minOffset, int maxOffset) {
-        return setHeaderTopBottomOffset(coordinatorLayout, header,
-                getTopBottomOffsetForScrollingSibling() - dy, minOffset, maxOffset);
+    final int scroll(CoordinatorLayout coordinatorLayout, View header, int dy, int minOffset, int maxOffset) {
+        return setHeaderTopBottomOffset(coordinatorLayout, header, getTopBottomOffsetForScrollingSibling() - dy, minOffset, maxOffset);
     }
 
-    final boolean fling(CoordinatorLayout coordinatorLayout, View layout, int minOffset,
-                        int maxOffset, float velocityY) {
+    final boolean fling(CoordinatorLayout coordinatorLayout, View layout, int minOffset, int maxOffset, float velocityY) {
         if (mFlingRunnable != null) {
             layout.removeCallbacks(mFlingRunnable);
             mFlingRunnable = null;
@@ -275,8 +275,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
             mScroller = ScrollerCompat.create(layout.getContext());
         }
 
-        mScroller.fling(
-                0, getTopAndBottomOffset(), // curr
+        mScroller.fling(0, getTopAndBottomOffset(), // curr
                 0, Math.round(velocityY), // velocity.
                 0, 0, // x
                 minOffset, maxOffset); // y
@@ -303,8 +302,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
      * Return true if the view can be dragged.
      */
     boolean canDragView(View view) {
-        if (scrollingView != null)
-            return scrollingView.getVisibility() == View.VISIBLE;
+        if (scrollingView != null) return scrollingView.getVisibility() == View.VISIBLE;
         return true;
     }
 
@@ -339,8 +337,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
 
     @Override
     public boolean onStartNestedScroll(@NotNull CoordinatorLayout coordinatorLayout, @NotNull View child, @NotNull View directTargetChild, @NotNull View target, int nestedScrollAxes) {
-        final boolean started = (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0
-                && coordinatorLayout.getHeight() - directTargetChild.getHeight() <= child.getHeight();
+        final boolean started = (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0 && coordinatorLayout.getHeight() - directTargetChild.getHeight() <= child.getHeight();
         return started;
     }
 
@@ -356,8 +353,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
         if (dyUnconsumed < 0) {
             // If the scrolling view is scrolling down but not consuming, it's probably be at
             // the top of it's content
-            scroll(coordinatorLayout, child, dyUnconsumed,
-                    getMinOffset(child), getMaxOffset(child));
+            scroll(coordinatorLayout, child, dyUnconsumed, getMinOffset(child), getMaxOffset(child));
         }
     }
 
@@ -365,11 +361,9 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
     public boolean onNestedPreFling(@NotNull CoordinatorLayout coordinatorLayout, @NotNull View child, @NotNull View target, float velocityX, float velocityY) {
         boolean flung = false;
         if (velocityY > 0 && child.getTop() > getMinOffset(child)) {
-            flung = fling(coordinatorLayout, child, getMinOffset(child),
-                    getMaxOffset(child), -velocityY);
+            flung = fling(coordinatorLayout, child, getMinOffset(child), getMaxOffset(child), -velocityY);
         } else if (velocityY < 0 && !ViewCompat.canScrollVertically(target, -1)) {
-            flung = fling(coordinatorLayout, child, getMinOffset(child),
-                    getMaxOffset(child), -velocityY);
+            flung = fling(coordinatorLayout, child, getMinOffset(child), getMaxOffset(child), -velocityY);
         }
         return flung;
     }
@@ -389,8 +383,7 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
                         fling(coordinatorLayout, child, getMinOffset(child), getMaxOffset(child), scroller.getCurrVelocity());
                     else if (velocityY > 0 && !ViewCompat.canScrollVertically(target, 1))
                         fling(coordinatorLayout, child, getMinOffset(child), getMaxOffset(child), -scroller.getCurrVelocity());
-                    else
-                        ViewCompat.postOnAnimation(child, this);
+                    else ViewCompat.postOnAnimation(child, this);
                 }
             }
         });
@@ -421,14 +414,31 @@ public class MyBehavior extends AppBarLayout.ScrollingViewBehavior {
         extraOffset = offset;
     }
 
-    private OnScrollChangeListener mOnScrollChangeListener;
+    private List<OnScrollChangeListener> scrollListeners;
 
-    public void setOnScrollChangeListener(OnScrollChangeListener listener) {
-        mOnScrollChangeListener = listener;
+    public void addOnOffsetChangedListener(@Nullable OnScrollChangeListener listener) {
+        if (scrollListeners == null) {
+            scrollListeners = new ArrayList<>();
+        }
+        if (listener != null && !scrollListeners.contains(listener)) {
+            scrollListeners.add(listener);
+        }
+    }
+
+    public void removeOnOffsetChangedListener(@Nullable OnScrollChangeListener listener) {
+        if (scrollListeners != null && listener != null) {
+            scrollListeners.remove(listener);
+        }
     }
 
     public interface OnScrollChangeListener {
-        void onScrollChange(View v, int dy);
+        /**
+         * @param headerView    头视图
+         * @param scrollingView 下方滑动视图
+         * @param offsetDy      顶部便宜了
+         * @param leftOffsetDy  可滑动剩余偏移量
+         */
+        void onScrollChange(View headerView, View scrollingView, int offsetDy, int leftOffsetDy);
     }
 
     /**

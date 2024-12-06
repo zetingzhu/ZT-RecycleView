@@ -1,5 +1,6 @@
 package com.scwang.smart.refresh.layout.util;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,9 +24,13 @@ public class DesignUtil {
                 for (int i = layout.getChildCount() - 1; i >= 0; i--) {
                     View view = layout.getChildAt(i);
                     if (view instanceof AppBarLayout) {
-                        ((AppBarLayout) view).addOnOffsetChangedListener((appBarLayout, verticalOffset) -> listener.onCoordinatorUpdate(
-                                verticalOffset >= 0,
-                                (appBarLayout.getTotalScrollRange() + verticalOffset) <= 0));
+                        ((AppBarLayout) view).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                            @Override
+                            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+//                                Log.d("SmartRefreshLayout", "底部设置  off: " + (appBarLayout.getTotalScrollRange() + verticalOffset));
+                                listener.onCoordinatorUpdate(verticalOffset >= 0, (appBarLayout.getTotalScrollRange() + verticalOffset) <= 0);
+                            }
+                        });
                     }
                 }
             }

@@ -23,13 +23,13 @@ public class SimpleBoundaryDecider implements ScrollBoundaryDecider {
     @Override
     public boolean canRefresh(View content) {
         if (boundary != null) {
-            Log.d("SmartRefreshLayout", "滚动 3 ");
+            Log.d("SmartRefreshLayout", "下拉刷新 3 ");
 
             return boundary.canRefresh(content);
         }
         //mActionEvent == null 时 canRefresh 不会动态递归搜索
         boolean crboo = SmartUtil.canRefresh(content, mActionEvent);
-        Log.d("SmartRefreshLayout", "滚动 4 ：" + crboo);
+        Log.d("SmartRefreshLayout", "下拉刷新 4 ：" + crboo);
         return crboo;
     }
 

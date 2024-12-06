@@ -1,5 +1,11 @@
 package com.scwang.smart.refresh.layout.wrapper;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.isContentView;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.isTransformedTouchPointInView;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.measureViewHeight;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.scrollListBy;
+
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.PointF;
@@ -22,6 +28,7 @@ import com.scwang.smart.refresh.layout.api.RefreshContent;
 import com.scwang.smart.refresh.layout.api.RefreshKernel;
 import com.scwang.smart.refresh.layout.kernel.R;
 import com.scwang.smart.refresh.layout.listener.CoordinatorLayoutListener;
+import com.scwang.smart.refresh.layout.listener.MyBehaviorListener;
 import com.scwang.smart.refresh.layout.listener.ScrollBoundaryDecider;
 import com.scwang.smart.refresh.layout.simple.SimpleBoundaryDecider;
 import com.scwang.smart.refresh.layout.util.DesignUtil;
@@ -29,12 +36,6 @@ import com.scwang.smart.refresh.layout.util.DesignUtil;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.isContentView;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.isTransformedTouchPointInView;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.measureViewHeight;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.scrollListBy;
 
 /**
  * 刷新内容包装
@@ -52,9 +53,11 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
     protected boolean mEnableRefresh = true;
     protected boolean mEnableLoadMore = true;
     protected SimpleBoundaryDecider mBoundaryAdapter = new SimpleBoundaryDecider();
+    protected MyBehaviorListener myBehaviorListener; // 添加上自定义Behaver 监听
 
-    public RefreshContentWrapper(@NonNull View view) {
+    public RefreshContentWrapper(@NonNull View view, MyBehaviorListener myBehaviorListener) {
         this.mContentView = mOriginalContentView = mScrollableView = view;
+        this.myBehaviorListener = myBehaviorListener;
     }
 
     //<editor-fold desc="findScrollableView">
@@ -69,6 +72,9 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
             }
             if (!isInEditMode) {
                 DesignUtil.checkCoordinatorLayout(content, kernel, this);
+                if (myBehaviorListener != null) {
+                    myBehaviorListener.checkCoordinatorLayout(content, kernel, this);
+                }
             }
             scrollableView = content;
         }
@@ -87,7 +93,7 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
         View scrollableView = null;
         Queue<View> views = new LinkedList<>();
         //noinspection unchecked
-        List<View> list = (List<View>)views;
+        List<View> list = (List<View>) views;
         list.add(content);
         while (list.size() > 0 && scrollableView == null) {
             View view = views.poll();
@@ -178,10 +184,9 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
 
     @Override
     public boolean canRefresh() {
-
-        Log.d("SmartRefreshLayout", "滚动 2 ：mEnableRefresh:" + mEnableRefresh + " mBoundaryAdapter.canRefresh(mContentView):" + (mBoundaryAdapter.canRefresh(mContentView)));
-
-        return mEnableRefresh && mBoundaryAdapter.canRefresh(mContentView);
+        boolean canRefreshBoo = mEnableRefresh && mBoundaryAdapter.canRefresh(mContentView);
+        Log.d("SmartRefreshLayout", "下拉刷新 2 ： mEnableRefresh：" + mEnableRefresh + " canRefreshBoo:" + canRefreshBoo);
+        return canRefreshBoo;
     }
 
     @Override
@@ -232,7 +237,7 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
                 frameLayout.addView(fixedHeader, 1, lp);
             }
             if (fixedFooter != null) {
-                fixedFooter.setTag(R.id.srl_tag,"fixed-bottom");
+                fixedFooter.setTag(R.id.srl_tag, "fixed-bottom");
                 ViewGroup.LayoutParams lp = fixedFooter.getLayoutParams();
                 ViewGroup parent = (ViewGroup) fixedFooter.getParent();
                 index = parent.indexOfChild(fixedFooter);
@@ -277,9 +282,9 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
         try {
             float dy = (value - mLastSpinner) * mScrollableView.getScaleY();
             if (mScrollableView instanceof AbsListView) {
-                scrollListBy((AbsListView) mScrollableView, (int)dy);
+                scrollListBy((AbsListView) mScrollableView, (int) dy);
             } else {
-                mScrollableView.scrollBy(0, (int)dy);
+                mScrollableView.scrollBy(0, (int) dy);
             }
         } catch (Throwable e) {
             //根据用户反馈，此处可能会有BUG
@@ -289,4 +294,11 @@ public class RefreshContentWrapper implements RefreshContent, CoordinatorLayoutL
     }
     //</editor-fold>
 
+    public MyBehaviorListener getMyBehaviorListener() {
+        return myBehaviorListener;
+    }
+
+    public void setMyBehaviorListener(MyBehaviorListener myBehaviorListener) {
+        this.myBehaviorListener = myBehaviorListener;
+    }
 }

@@ -17,6 +17,7 @@
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/ll_top_behavior"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -49,18 +50,11 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <com.scwang.smart.refresh.layout.SmartRefreshLayout
-                android:id="@+id/refreshLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior=".behavior.MyScrollingViewBehavior">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+                android:layout_height="wrap_content"
+                app:layout_behavior=".behavior.MyScrollingViewBehavior" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 </LinearLayout>

@@ -1,5 +1,16 @@
 package com.scwang.smart.refresh.layout;
 
+import static android.view.MotionEvent.obtain;
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.getSize;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.dp2px;
+import static com.scwang.smart.refresh.layout.util.SmartUtil.fling;
+import static java.lang.System.currentTimeMillis;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -26,6 +37,16 @@ import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
+
 import com.scwang.smart.refresh.layout.api.RefreshComponent;
 import com.scwang.smart.refresh.layout.api.RefreshContent;
 import com.scwang.smart.refresh.layout.api.RefreshFooter;
@@ -39,6 +60,7 @@ import com.scwang.smart.refresh.layout.kernel.R;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshFooterCreator;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator;
 import com.scwang.smart.refresh.layout.listener.DefaultRefreshInitializer;
+import com.scwang.smart.refresh.layout.listener.MyBehaviorListener;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smart.refresh.layout.listener.OnMultiListener;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
@@ -50,27 +72,6 @@ import com.scwang.smart.refresh.layout.util.SmartUtil;
 import com.scwang.smart.refresh.layout.wrapper.RefreshContentWrapper;
 import com.scwang.smart.refresh.layout.wrapper.RefreshFooterWrapper;
 import com.scwang.smart.refresh.layout.wrapper.RefreshHeaderWrapper;
-
-import static android.view.MotionEvent.obtain;
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.getSize;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.dp2px;
-import static com.scwang.smart.refresh.layout.util.SmartUtil.fling;
-import static java.lang.System.currentTimeMillis;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.NestedScrollingChildHelper;
-import androidx.core.view.NestedScrollingParent;
-import androidx.core.view.NestedScrollingParentHelper;
-import androidx.core.view.ViewCompat;
 
 /**
  * 智能刷新布局
@@ -232,6 +233,11 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
     protected static MarginLayoutParams sDefaultMarginLP = new MarginLayoutParams(-1, -1);
     //</editor-fold>
 
+
+    //<editor-fold desc="自定定义字段">
+    protected MyBehaviorListener myBehaviorListener; // 用来监听处理 CoordinatorLayout 异常
+    //</editor-fold>
+
     //<editor-fold desc="构造方法 construction methods">
     public SmartRefreshLayout(Context context) {
         this(context, null);
@@ -365,7 +371,7 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
         int indexHeader = -1;
         int indexFooter = -1;
         if (indexContent >= 0) {
-            mRefreshContent = new RefreshContentWrapper(super.getChildAt(indexContent));
+            mRefreshContent = new RefreshContentWrapper(super.getChildAt(indexContent), myBehaviorListener);
             if (indexContent == 1) {
                 indexHeader = 0;
                 if (count == 3) {
@@ -432,7 +438,7 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
                     View view = getChildAt(i);
                     if ((mRefreshHeader == null || view != mRefreshHeader.getView()) &&
                             (mRefreshFooter == null || view != mRefreshFooter.getView())) {
-                        mRefreshContent = new RefreshContentWrapper(view);
+                        mRefreshContent = new RefreshContentWrapper(view, myBehaviorListener);
                     }
                 }
             }
@@ -444,7 +450,7 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
                 errorView.setTextSize(20);
                 errorView.setText(R.string.srl_content_empty);
                 super.addView(errorView, 0, new LayoutParams(MATCH_PARENT, MATCH_PARENT));
-                mRefreshContent = new RefreshContentWrapper(errorView);
+                mRefreshContent = new RefreshContentWrapper(errorView, myBehaviorListener);
                 mRefreshContent.getView().setPadding(padding, padding, padding, padding);
             }
 
@@ -1042,9 +1048,18 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
                 if (!mIsBeingDragged && !mEnableDisallowIntercept && mDragDirection != 'h' && mRefreshContent != null) {//没有拖动之前，检测  canRefresh canLoadMore 来开启拖动
                     if (mDragDirection == 'v' || (Math.abs(dy) >= mTouchSlop && Math.abs(dx) < Math.abs(dy))) {//滑动允许最大角度为45度
                         mDragDirection = 'v';
+
+                        /**
+                         * 不能的    下拉刷新 5 dy：131.0 mSpinner:0 (g || h)true cf:false
+                         * 能被下拉的 下拉刷新 5 dy：42.380646 mSpinner:0 (g || h)true cf:true
+                         */
+                        Log.w("SmartRefreshLayout", "下拉刷新 5 > dy：" + dy + " mSpinner:" + mSpinner
+                                + " (g || h):" + (mEnableOverScrollDrag || mEnableRefresh) + " cf:" + mRefreshContent.canRefresh());
+
                         if (dy > 0 && (mSpinner < 0 || ((mEnableOverScrollDrag || mEnableRefresh) && mRefreshContent.canRefresh()))) {
                             mIsBeingDragged = true;
                             mTouchY = touchY - mTouchSlop;//调整 mTouchSlop 偏差
+                            Log.d("SmartRefreshLayout", "下拉刷新 成功开始下拉 mIsBeingDragged：" + mIsBeingDragged + " mTouchY:" + mTouchY);
                         } else if (dy < 0 && (mSpinner > 0 || ((mEnableOverScrollDrag || mEnableLoadMore) && ((mState == RefreshState.Loading && mFooterLocked) || mRefreshContent.canLoadMore())))) {
                             mIsBeingDragged = true;
                             mTouchY = touchY + mTouchSlop;//调整 mTouchSlop 偏差
@@ -2798,7 +2813,7 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
 
         super.addView(content, thisGroup.getChildCount(), lp);
 
-        mRefreshContent = new RefreshContentWrapper(content);
+        mRefreshContent = new RefreshContentWrapper(content, myBehaviorListener);
         if (mAttachedToWindow) {
             View fixedHeaderView = thisView.findViewById(mFixedHeaderViewId);
             View fixedFooterView = thisView.findViewById(mFixedFooterViewId);
@@ -3673,6 +3688,16 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
     @Override
     public boolean isLoading() {
         return mState == RefreshState.Loading;
+    }
+
+    /**
+     * 设置自定义 Behavior 监听
+     */
+    public void setMyBehaviorListener(MyBehaviorListener myBehaviorListener) {
+        this.myBehaviorListener = myBehaviorListener;
+        if (mRefreshContent instanceof RefreshContentWrapper) {
+            ((RefreshContentWrapper) mRefreshContent).setMyBehaviorListener(myBehaviorListener);
+        }
     }
     //</editor-fold>
     //</editor-fold>
