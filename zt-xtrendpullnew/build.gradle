@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.zzt.xtrend.pull'
+    namespace 'com.zzt.xtrendpullnew'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.zzt.xtrend.pull"
+        applicationId "com.zzt.xtrendpullnew"
         minSdk 24
         targetSdk 34
         versionCode 1
@@ -22,14 +22,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    buildFeatures {
-        viewBinding true
     }
 }
 

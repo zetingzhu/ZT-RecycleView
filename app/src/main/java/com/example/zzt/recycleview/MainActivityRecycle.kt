@@ -18,6 +18,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV19
 import com.example.zzt.recycleview.act.ActRecycleViewV2
 import com.example.zzt.recycleview.act.ActRecycleViewV20
 import com.example.zzt.recycleview.act.ActRecycleViewV21
+import com.example.zzt.recycleview.act.ActRecycleViewV22
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
 import com.example.zzt.recycleview.act.ActRecycleViewV5
@@ -78,12 +79,9 @@ class MainActivityRecycle : AppCompatActivity() {
                 "下拉上拉 下方 SmartRefreshLayout ", "", ActRecycleViewV15::class.java
             )
         )
-        mListDialog.add(
-            StartActivityDao(
-                "下拉上拉 PullToRefresh库修改 ", "", ActRecycleViewV10::class.java
-            )
-        )
-        mListDialog.add(StartActivityDao("下拉上拉 自定义失败 ", "", ActRecycleViewV11::class.java))
+
+        mListDialog.add(StartActivityDao("PullToRefresh 下拉上拉 自定义失败 ", "", ActRecycleViewV11::class.java))
+
         mListDialog.add(
             StartActivityDao(
                 "下拉上拉 RV 加个弹性拷贝 ", "", ActRecycleViewV12::class.java
@@ -94,6 +92,24 @@ class MainActivityRecycle : AppCompatActivity() {
                 "下拉上拉 RV 加个弹性转义 ", "", ActRecycleViewV13::class.java
             )
         )
+
+
+        mListDialog.add(
+            StartActivityDao(
+                "PullToRefresh 自定义ScrollView",
+                "测试发现这个视图不显示",
+                ActRecycleViewV19::class.java
+            )
+        )
+
+        mListDialog.add(
+            StartActivityDao(
+                "PullToRefresh 自定义ScrollView 20",
+                "测试发现这个视图不显示",
+                ActRecycleViewV20::class.java
+            )
+        )
+
         mListDialog.add(
             StartActivityDao(
                 "下拉上拉 SmartRefreshLayout CoordinatorLayout ", "", ActRecycleViewV16::class.java
@@ -113,22 +129,29 @@ class MainActivityRecycle : AppCompatActivity() {
                 ActRecycleViewV21::class.java
             )
         )
+
         mListDialog.add(
             StartActivityDao(
-                "自定义加载更多", "", ActRecycleViewV17::class.java
+                "下拉上拉 SmartRefreshLayout",
+                "SmartRefreshLayout 嵌套普通 View ",
+                ActRecycleViewV22::class.java
             )
         )
 
         mListDialog.add(
             StartActivityDao(
-                "自定义ScrollView", "测试发现这个视图不显示", ActRecycleViewV19::class.java
+                "SmartRefreshLayout 自定义加载更多", "", ActRecycleViewV17::class.java
             )
         )
+
+
+
         mListDialog.add(
             StartActivityDao(
-                "自定义ScrollView 20", "测试发现这个视图不显示", ActRecycleViewV20::class.java
+                "handmark PullToRefresh库修改 ", "", ActRecycleViewV10::class.java
             )
         )
+
         StartActivityRecyclerAdapter.setAdapterData(
             rv_main, RecyclerView.VERTICAL, mListDialog
         ) { itemView: View?, position: Int, data: StartActivityDao ->

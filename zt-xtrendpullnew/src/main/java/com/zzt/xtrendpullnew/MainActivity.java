@@ -1,4 +1,4 @@
-package com.zzt.xtrend.pull;
+package com.zzt.xtrendpullnew;
 
 import android.os.Bundle;
 

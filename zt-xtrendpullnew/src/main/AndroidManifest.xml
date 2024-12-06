@@ -9,13 +9,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZTRecycleView">
         <activity
-            android:name=".RecycleviewPullAct"
+            android:name="com.zzt.xtrend.pull.RecycleviewPullAct"
             android:exported="false" />
         <activity
-            android:name=".LinearLayoutPullActV2"
+            android:name="com.zzt.xtrend.pull.LinearLayoutPullActV2"
             android:exported="false" />
         <activity
-            android:name=".MainActivityList"
+            android:name="com.zzt.xtrend.pull.MainActivityList"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,10 +24,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ScrollViewPullAct"
+            android:name="com.zzt.xtrend.pull.ScrollViewPullAct"
             android:exported="true" />
         <activity
-            android:name=".LinearLayoutPullActV3"
+            android:name="com.zzt.xtrend.pull.LinearLayoutPullActV3"
             android:exported="false" />
     </application>
 
