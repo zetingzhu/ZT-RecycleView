@@ -1,12 +1,7 @@
 package com.zzt.downtimer;
 
-import static com.zzt.utilcode.util.FragmentUtils.setBackgroundResource;
-
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,11 +9,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.zzt.utilcode.util.TimeUtils;
+import com.zzt.entiy.ItemTitle;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 
 public class TitleViewHolder extends RecyclerListAdapter.ViewHolder<ItemTitle> {

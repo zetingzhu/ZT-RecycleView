@@ -1,9 +1,10 @@
-package com.zzt.downtimer;
+package com.zzt.entiy;
 
 
-public class ItemTitle   {
-    private  String title;
+public class ItemTitle {
+    private String title;
     private long time;
+    private long remainingTime; // Remaining time in milliseconds (transient)
 
     public ItemTitle(String title, long time) {
         this.title = title;
@@ -24,5 +25,13 @@ public class ItemTitle   {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public long getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(long remainingTime) {
+        this.remainingTime = remainingTime;
     }
 }

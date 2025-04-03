@@ -144,8 +144,6 @@ class MainActivityRecycle : AppCompatActivity() {
             )
         )
 
-
-
         mListDialog.add(
             StartActivityDao(
                 "handmark PullToRefresh库修改 ", "", ActRecycleViewV10::class.java

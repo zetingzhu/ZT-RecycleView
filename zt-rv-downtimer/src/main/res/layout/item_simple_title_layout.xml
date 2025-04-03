@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#a9a9a8"
+    android:background="#a9a9a9"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
@@ -10,6 +10,7 @@
         android:id="@+id/title_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="animal"
         android:textColor="#ff6c6c6c" />
 
@@ -27,5 +28,10 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:src="@drawable/ic_launcher_background" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#00FFDD" />
 
 </LinearLayout>

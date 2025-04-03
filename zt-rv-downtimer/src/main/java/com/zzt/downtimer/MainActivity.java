@@ -1,23 +1,22 @@
 package com.zzt.downtimer;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.activity.SystemBarStyle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zzt.downv2.RvListActV2;
+import com.zzt.downv3.RvListActV3;
+import com.zzt.entiy.ItemTitle;
+import com.zzt.util.DownTimeUtils;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 //            return insets;
 //        });
+
     }
 
     private void initView() {
@@ -92,22 +92,37 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        };
 
+
         List<ItemTitle> mList = new ArrayList<>();
         long sysTime = System.currentTimeMillis();
         Random random = new Random();
-        mList.add(new ItemTitle("标题1", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题2", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题3", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题4", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题5", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题6", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题7", sysTime + (random.nextInt(100) * 3000)));
-        mList.add(new ItemTitle("标题8", sysTime + (random.nextInt(100) * 3000)));
+
+
+        for (int i = 0; i < 20; i++) {
+            mList.add(new ItemTitle("标题 > " + i, sysTime + (random.nextInt(100) * 3000)));
+        }
+
 
         adapter.setItemList(mList);
+
 
         rv_list.setLayoutManager(new LinearLayoutManager(this));
         rv_list.setAdapter(adapter);
 
+
+        TextView tv_list_v2 = findViewById(R.id.tv_list_v2);
+        tv_list_v2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RvListActV2.start(v.getContext());
+            }
+        });
+
+        findViewById(R.id.tv_list_v3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RvListActV3.start(v.getContext());
+            }
+        });
     }
 }
