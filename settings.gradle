@@ -1,17 +1,17 @@
 pluginManagement {
     repositories {
-        maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
         gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "ZT-RecycleView"
@@ -25,6 +25,5 @@ include ':zt-rvitemdecoration'
 include ':zt-rv-downtimer'
 include ':zt-xtrendpull'
 include ':zt-xtrendpullnew'
-include ':lib'
-include ':MyLib'
 include ':MyJavaLib'
+include ':zt-github-rv-sample'

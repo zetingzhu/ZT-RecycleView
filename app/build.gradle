@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.example.zzt.recycleview'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.zzt.recycleview"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -61,6 +61,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity-ktx:1.8.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -77,4 +78,15 @@ dependencies {
     implementation project(path: ':refresh-footer-classics')
     implementation project(path: ':refresh-layout-kernel')
     implementation project(path: ':refresh-header-classics')
+
+
+    implementation("io.github.scwang90:refresh-layout-kernel:3.0.0-alpha")   //核心必须依赖
+    implementation("io.github.scwang90:refresh-header-classics:3.0.0-alpha")   //经典刷新头
+    implementation("io.github.scwang90:refresh-header-radar:3.0.0-alpha")   //雷达刷新头
+    implementation("io.github.scwang90:refresh-header-falsify:3.0.0-alpha")   //虚拟刷新头
+    implementation("io.github.scwang90:refresh-header-material:3.0.0-alpha")   //谷歌刷新头
+    implementation("io.github.scwang90:refresh-header-two-level:3.0.0-alpha")   //二级刷新头
+    implementation("io.github.scwang90:refresh-footer-ball:3.0.0-alpha")    //球脉冲加载
+    implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")    //经典加载
+
 }

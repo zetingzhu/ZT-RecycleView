@@ -19,6 +19,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV2
 import com.example.zzt.recycleview.act.ActRecycleViewV20
 import com.example.zzt.recycleview.act.ActRecycleViewV21
 import com.example.zzt.recycleview.act.ActRecycleViewV22
+import com.example.zzt.recycleview.act.ActRecycleViewV23
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
 import com.example.zzt.recycleview.act.ActRecycleViewV5
@@ -80,7 +81,13 @@ class MainActivityRecycle : AppCompatActivity() {
             )
         )
 
-        mListDialog.add(StartActivityDao("PullToRefresh 下拉上拉 自定义失败 ", "", ActRecycleViewV11::class.java))
+        mListDialog.add(
+            StartActivityDao(
+                "PullToRefresh 下拉上拉 自定义失败 ",
+                "",
+                ActRecycleViewV11::class.java
+            )
+        )
 
         mListDialog.add(
             StartActivityDao(
@@ -147,6 +154,12 @@ class MainActivityRecycle : AppCompatActivity() {
         mListDialog.add(
             StartActivityDao(
                 "handmark PullToRefresh库修改 ", "", ActRecycleViewV10::class.java
+            )
+        )
+
+        mListDialog.add(
+            StartActivityDao(
+                "SmartRefreshLayout 刷新进入二楼", "", ActRecycleViewV23::class.java
             )
         )
 

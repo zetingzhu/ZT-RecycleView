@@ -10,8 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ZTRecycleView"
-        tools:targetApi="31">
+        android:theme="@style/Theme.ZTRecycleView">
+
+        <activity
+            android:name=".act.ActRecycleViewV23"
+            android:exported="false" />
         <activity
             android:name=".divider.DividerAct"
             android:exported="false" />
