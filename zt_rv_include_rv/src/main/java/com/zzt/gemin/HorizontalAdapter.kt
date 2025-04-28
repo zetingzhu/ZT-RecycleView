@@ -48,4 +48,17 @@ class HorizontalAdapter(private var dataList: List<HorizontalItem>) :
         dataList = newDataList
         notifyDataSetChanged()
     }
+
+    private var recyclerView: RecyclerView? = null
+
+    // 新增方法：保存 RecyclerView 实例
+    fun setRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
+    }
+
+    // 新增方法：滚动 RecyclerView 到指定位置
+    fun scrollToPosition(x: Int) {
+        recyclerView?.scrollBy(x, 0)
+    }
+
 }

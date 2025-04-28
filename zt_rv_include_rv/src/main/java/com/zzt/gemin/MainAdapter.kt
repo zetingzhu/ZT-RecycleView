@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zzt.MoreRVUtil
+import com.zzt.zt_rv_include_rv.BuildConfig
 import com.zzt.zt_rv_include_rv.R
 
 /**
@@ -20,6 +22,10 @@ class MainAdapter(private val dataList: List<MainListItem>) :
     private val VIEW_TYPE_TITLE = 0
     private val VIEW_TYPE_HORIZONTAL_LIST = 1
     private val VIEW_TYPE_PRODUCT = 2
+
+
+    // 用于保存所有 HorizontalRecyclerView 的列表
+    private val horizontalRecyclerViews = mutableListOf<RecyclerView>()
 
     // 根据数据项的类型返回不同的视图类型
     override fun getItemViewType(position: Int): Int {
@@ -38,14 +44,18 @@ class MainAdapter(private val dataList: List<MainListItem>) :
                 val view = inflater.inflate(R.layout.gemin_item_title, parent, false)
                 TitleViewHolder(view)
             }
+
             VIEW_TYPE_HORIZONTAL_LIST -> {
                 val view = inflater.inflate(R.layout.gemin_item_horizontal_list, parent, false)
+
                 HorizontalListViewHolder(view)
             }
+
             VIEW_TYPE_PRODUCT -> {
                 val view = inflater.inflate(R.layout.gemin_item_product, parent, false)
                 ProductViewHolder(view)
             }
+
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -54,7 +64,33 @@ class MainAdapter(private val dataList: List<MainListItem>) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = dataList[position]) {
             is MainListItem.TitleItem -> (holder as TitleViewHolder).bind(item.title)
-            is MainListItem.HorizontalListItem -> (holder as HorizontalListViewHolder).bind(item.items)
+            is MainListItem.HorizontalListItem -> {
+                (holder as HorizontalListViewHolder).bind(item.items)
+
+                /**********************测试数据**********************/
+                if (BuildConfig.DEBUG) {
+                    // 将当前的 RecyclerView 添加到列表中
+                    horizontalRecyclerViews.add((holder as HorizontalListViewHolder).horizontalRecyclerView)
+                    // 设置滑动监听器
+                    (holder as HorizontalListViewHolder).horizontalRecyclerView.addOnScrollListener(
+                        object :
+                            RecyclerView.OnScrollListener() {
+                            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                                super.onScrolled(recyclerView, dx, dy)
+                                // 同步滚动其他 RecyclerView
+                                for (otherRecyclerView in horizontalRecyclerViews) {
+                                    if (otherRecyclerView != recyclerView) {
+                                        (otherRecyclerView.adapter as? HorizontalAdapter)?.scrollToPosition(
+                                            dx
+                                        )
+                                    }
+                                }
+                            }
+                        })
+                }
+                /**********************测试数据**********************/
+            }
+
             is MainListItem.ProductItem -> (holder as ProductViewHolder).bind(item.product)
         }
     }
@@ -71,22 +107,20 @@ class MainAdapter(private val dataList: List<MainListItem>) :
     }
 
     class HorizontalListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val horizontalRecyclerView: RecyclerView =
+        val horizontalRecyclerView: RecyclerView =
             itemView.findViewById(R.id.horizontalRecyclerView)
-        // 将 horizontalAdapter 提升为 ViewHolder 的属性
-        private var horizontalAdapter: HorizontalAdapter? = null
+        var horizontalAdapter: HorizontalAdapter? = null
 
         fun bind(items: List<HorizontalItem>) {
-            // 优化：只在需要时创建新的 Adapter
             if (horizontalAdapter == null) {
                 horizontalAdapter = HorizontalAdapter(items)
+                horizontalAdapter?.setRecyclerView(horizontalRecyclerView) // 设置 RecyclerView 实例
                 horizontalRecyclerView.adapter = horizontalAdapter
                 horizontalRecyclerView.layoutManager =
                     LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
                 horizontalRecyclerView.setHasFixedSize(true)
-                horizontalRecyclerView.isNestedScrollingEnabled = false
+
             } else {
-                // 否则，更新 Adapter 中的数据
                 horizontalAdapter?.updateData(items)
             }
         }

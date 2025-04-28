@@ -14,9 +14,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zzt.MoreRVUtil
+import com.zzt.zt_rv_include_rv.BuildConfig
 import com.zzt.zt_rv_include_rv.R
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var scrollSync: HorizontalScrollSync
+    private var syncV2: SafeScrollSync? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,9 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         // 创建模拟数据
         val verticalItems = createMockData()
-
+        scrollSync = HorizontalScrollSync()
+        syncV2 = SafeScrollSync()
         verticalRecyclerView.adapter =
-            VerticalAdapter(verticalItems) { verticalPos, horizontalPos ->
+            VerticalAdapter(verticalItems, scrollSync, syncV2) { verticalPos, horizontalPos ->
                 val item = verticalItems[verticalPos].horizontalItems[horizontalPos]
                 Toast.makeText(
                     this,
@@ -43,6 +48,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scrollSync.clear()
+        syncV2?.clear()
     }
 
     private fun createMockData(): List<VerticalItem> {

@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity() {
                 listOf(
                     HorizontalItem(1, "商品 A", "https://via.placeholder.com/150"),
                     HorizontalItem(2, "商品 B", "https://via.placeholder.com/150"),
-                    HorizontalItem(3, "商品 C", "https://via.placeholder.com/150")
+                    HorizontalItem(3, "商品 C", "https://via.placeholder.com/150"),
+                    HorizontalItem(3, "商品 D", "https://via.placeholder.com/150")
                 )
             ),
             MainListItem.ProductItem(
@@ -42,18 +43,21 @@ class MainActivity : AppCompatActivity() {
                 listOf(
                     HorizontalItem(4, "商品 D", "https://via.placeholder.com/150"),
                     HorizontalItem(5, "商品 E", "https://via.placeholder.com/150"),
-                    HorizontalItem(6, "商品 F", "https://via.placeholder.com/150")
+                    HorizontalItem(6, "商品 F", "https://via.placeholder.com/150"),
+                    HorizontalItem(6, "商品 G", "https://via.placeholder.com/150")
                 )
             ),
             MainListItem.ProductItem(
                 Product(102, "商品 Y", 19.99, "另一个好商品。")
             ),
+
             MainListItem.TitleItem("热门推荐"),
             MainListItem.HorizontalListItem(
                 listOf(
                     HorizontalItem(1, "商品 A", "https://via.placeholder.com/150"),
                     HorizontalItem(2, "商品 B", "https://via.placeholder.com/150"),
-                    HorizontalItem(3, "商品 C", "https://via.placeholder.com/150")
+                    HorizontalItem(3, "商品 C", "https://via.placeholder.com/150"),
+                    HorizontalItem(3, "商品 D", "https://via.placeholder.com/150")
                 )
             ),
             MainListItem.ProductItem(
@@ -64,33 +68,13 @@ class MainActivity : AppCompatActivity() {
                 listOf(
                     HorizontalItem(4, "商品 D", "https://via.placeholder.com/150"),
                     HorizontalItem(5, "商品 E", "https://via.placeholder.com/150"),
-                    HorizontalItem(6, "商品 F", "https://via.placeholder.com/150")
+                    HorizontalItem(6, "商品 F", "https://via.placeholder.com/150"),
+                    HorizontalItem(6, "商品 G", "https://via.placeholder.com/150")
                 )
             ),
             MainListItem.ProductItem(
                 Product(102, "商品 Y", 19.99, "另一个好商品。")
-            ), MainListItem.TitleItem("热门推荐"),
-            MainListItem.HorizontalListItem(
-                listOf(
-                    HorizontalItem(1, "商品 A", "https://via.placeholder.com/150"),
-                    HorizontalItem(2, "商品 B", "https://via.placeholder.com/150"),
-                    HorizontalItem(3, "商品 C", "https://via.placeholder.com/150")
-                )
             ),
-            MainListItem.ProductItem(
-                Product(101, "商品 X", 25.99, "这是一个很棒的商品。")
-            ),
-            MainListItem.TitleItem("猜你喜欢"),
-            MainListItem.HorizontalListItem(
-                listOf(
-                    HorizontalItem(4, "商品 D", "https://via.placeholder.com/150"),
-                    HorizontalItem(5, "商品 E", "https://via.placeholder.com/150"),
-                    HorizontalItem(6, "商品 F", "https://via.placeholder.com/150")
-                )
-            ),
-            MainListItem.ProductItem(
-                Product(102, "商品 Y", 19.99, "另一个好商品。")
-            )
         )
 
         val adapter = MainAdapter(dataList)
