@@ -4,6 +4,9 @@ pluginManagement {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         gradlePluginPortal()
+        maven { url "https://s01.oss.sonatype.org/content/groups/public" }
+        maven { url 'https://maven.aliyun.com/repository/google' } // 兼容旧版 google
+        maven { url 'https://maven.aliyun.com/repository/jcenter' } // 兼容旧版 jcenter
     }
 }
 dependencyResolutionManagement {
@@ -12,6 +15,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+
+        maven { url "https://s01.oss.sonatype.org/content/groups/public" }
+        maven { url 'https://maven.aliyun.com/repository/google' } // 兼容旧版 google
+        maven { url 'https://maven.aliyun.com/repository/jcenter' } // 兼容旧版 jcenter
     }
 }
 rootProject.name = "ZT-RecycleView"
@@ -28,3 +35,8 @@ include ':zt-xtrendpullnew'
 include ':MyJavaLib'
 include ':zt-github-rv-sample'
 include ':zt_rv_include_rv'
+include ':zt_qrefreshlayout_sample'
+include ':zt_bgarefreshlayout-android_sample'
+include ':zt_smartrefreshlayout_sample'
+include ':refresh-header'
+include ':refresh-layout'
