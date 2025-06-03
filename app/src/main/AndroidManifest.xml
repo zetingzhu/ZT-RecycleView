@@ -16,6 +16,9 @@
             android:name=".act.ActRecycleViewV23"
             android:exported="false" />
         <activity
+            android:name=".act.ActRecycleViewV24"
+            android:exported="false" />
+        <activity
             android:name=".divider.DividerAct"
             android:exported="false" />
         <activity

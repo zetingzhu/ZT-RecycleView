@@ -20,6 +20,7 @@ import com.example.zzt.recycleview.act.ActRecycleViewV20
 import com.example.zzt.recycleview.act.ActRecycleViewV21
 import com.example.zzt.recycleview.act.ActRecycleViewV22
 import com.example.zzt.recycleview.act.ActRecycleViewV23
+import com.example.zzt.recycleview.act.ActRecycleViewV24
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
 import com.example.zzt.recycleview.act.ActRecycleViewV5
@@ -163,6 +164,11 @@ class MainActivityRecycle : AppCompatActivity() {
             )
         )
 
+        mListDialog.add(
+            StartActivityDao(
+                "RecycleView 改弹幕滚动", "", ActRecycleViewV24::class.java
+            )
+        )
         StartActivityRecyclerAdapter.setAdapterData(
             rv_main, RecyclerView.VERTICAL, mListDialog
         ) { itemView: View?, position: Int, data: StartActivityDao ->

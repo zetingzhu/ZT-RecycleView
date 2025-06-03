@@ -68,3 +68,10 @@ https://github.com/bingoogolapple/BGARefreshLayout-Android
 [zt_smartrefreshlayout_sample](zt_smartrefreshlayout_sample)
 https://github.com/scwang90/SmartRefreshLayout
 下拉刷新、上拉加载、二级刷新、淘宝二楼、RefreshLayout、OverScroll，Android智能下拉刷新框架，支持越界回弹、越界拖动，具有极强的扩展性，集成了几十种炫酷的Header和 Footer。
+
+
+
+后面研究一下
+
+RecyclerView实现垂直自动无限滚动，类似于中奖信息，跑马灯
+https://github.com/yebook/AutoScrollRecyclerView
