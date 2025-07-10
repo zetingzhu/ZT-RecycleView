@@ -70,6 +70,16 @@ https://github.com/scwang90/SmartRefreshLayout
 下拉刷新、上拉加载、二级刷新、淘宝二楼、RefreshLayout、OverScroll，Android智能下拉刷新框架，支持越界回弹、越界拖动，具有极强的扩展性，集成了几十种炫酷的Header和 Footer。
 
 
+[zt_rv_cache](zt_rv_cache)
+RecycleView 各种数处理
+先入先出 队列
+lruCache 存储列表
+先入先出 map
+
+
+[zt_rvhor_marquee](zt_rvhor_marquee)
+用 RecycleView 实现一个横向跑马灯
+
 
 后面研究一下
 
