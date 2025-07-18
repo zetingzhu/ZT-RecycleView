@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i>
+    <chatserver>chat.bilibili.com</chatserver>
+    <chatid>8729348</chatid>
+    <mission>0</mission>
+    <maxlimit>1000</maxlimit>
+    <source>k-v</source>
+
+    <d p="0,1,25,16777215,1485266954,0,e5bd78f5,2894723780">
+        http://www.bilibili.com/video/av8123420/
+    </d>
+    <d p="0.88322997093201,1,25,16777215,1488362203,0,660de76b,3057746766">自己发的</d>
+    <d p="3.7298619747162,1,25,16777215,1488363593,0,660de76b,3057808900">自己发的</d>
+
+</i>

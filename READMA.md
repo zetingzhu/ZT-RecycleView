@@ -78,7 +78,7 @@ lruCache 存储列表
 
 
 [zt_rvhor_marquee](zt_rvhor_marquee)
-用 RecycleView 实现一个横向跑马灯
+用 RecycleView 实现 横向，竖向，跑马灯效果
 
 
 后面研究一下

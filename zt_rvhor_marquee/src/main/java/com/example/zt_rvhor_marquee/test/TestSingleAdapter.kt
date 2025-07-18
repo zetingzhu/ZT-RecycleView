@@ -13,7 +13,7 @@ import com.example.zt_rvhor_marquee.hor.MarqueeItem
  * @date: 2025/7/10
  *
  */
-class TestAdapter : RecyclerView.Adapter<TestAdapter.MVH> {
+class TestSingleAdapter : RecyclerView.Adapter<TestSingleAdapter.MVH> {
     var items: List<MarqueeItem>? = null
     var itemSize = 1
 
@@ -35,7 +35,7 @@ class TestAdapter : RecyclerView.Adapter<TestAdapter.MVH> {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MVH {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_marquee, parent, false) // 创建你的 item_marquee.xml 布局
+            .inflate(R.layout.item_marquee_single, parent, false) // 创建你的 item_marquee.xml 布局
         return MVH(view)
     }
 

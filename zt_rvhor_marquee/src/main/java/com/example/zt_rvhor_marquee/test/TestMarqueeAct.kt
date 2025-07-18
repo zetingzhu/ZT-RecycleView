@@ -17,10 +17,6 @@ import com.example.zt_rvhor_marquee.hor.MarqueeItem
 class TestMarqueeAct : AppCompatActivity() {
 
 
-    var rv_list: RecyclerView? = null
-    var tAdapter: TestAdapter? = null
-    var manager: MarqueeRecycleViewManager? = null
-
     companion object {
         @JvmStatic
         fun start(context: Context) {
@@ -40,21 +36,71 @@ class TestMarqueeAct : AppCompatActivity() {
             insets
         }
         initView()
+        initView2()
+        initView3()
+    }
+
+    private fun initView3() {
+        var rv_list_v3: RecyclerView = findViewById(R.id.rv_list_v3)
+        var tAdapter3 = TestSingleAdapter(mutableListOf())
+        var manager = MarqueeRecycleViewManager()
+        rv_list_v3?.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = tAdapter3
+            manager?.addRvManager(
+                this, MarqueeRecycleViewManager.MarqueeType.MARQUEE_TYPE_VERTICAL_SINGLE
+            )
+        }
+
+        rv_list_v3?.postDelayed({
+            val marqueeItems = mutableListOf<MarqueeItem>()
+            marqueeItems.add(MarqueeItem("消息1: 欢迎使用跑马灯功能!"))
+            marqueeItems.add(MarqueeItem("消息2: RecyclerView 横向滚动。"))
+            marqueeItems.add(MarqueeItem("消息3: 这是一个示例消息。"))
+            marqueeItems.add(MarqueeItem("消息4: 可以显示很多内容。"))
+            tAdapter3?.setListData(marqueeItems)
+            manager?.startAutoScroll()
+
+        }, 2000)
+    }
+
+    private fun initView2() {
+        var rv_list_v2: RecyclerView = findViewById(R.id.rv_list_v2)
+        var tAdapter2 = TestAdapter(mutableListOf())
+        var manager = MarqueeRecycleViewManager()
+        rv_list_v2?.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = tAdapter2
+            manager?.addRvManager(
+                this, MarqueeRecycleViewManager.MarqueeType.MARQUEE_TYPE_VERTICAL
+            )
+        }
+
+        rv_list_v2?.postDelayed({
+            val marqueeItems = mutableListOf<MarqueeItem>()
+            marqueeItems.add(MarqueeItem("消息1: 欢迎使用跑马灯功能!"))
+            marqueeItems.add(MarqueeItem("消息2: RecyclerView 横向滚动。"))
+            marqueeItems.add(MarqueeItem("消息3: 这是一个示例消息。"))
+            marqueeItems.add(MarqueeItem("消息4: 可以显示很多内容。"))
+            tAdapter2?.setListData(marqueeItems)
+            manager?.startAutoScroll()
+
+        }, 2000)
     }
 
     private fun initView() {
-        rv_list = findViewById(R.id.rv_list)
+        var rv_list: RecyclerView = findViewById(R.id.rv_list)
+        var tAdapter = TestAdapter(mutableListOf())
+        var manager = MarqueeRecycleViewManager()
         rv_list?.apply {
             layoutManager = LinearLayoutManager(context)
-            tAdapter = TestAdapter(mutableListOf())
             adapter = tAdapter
-
-            manager = MarqueeRecycleViewManager()
-            manager?.addRvManager(this, RecyclerView.HORIZONTAL)
+            manager?.addRvManager(
+                this, MarqueeRecycleViewManager.MarqueeType.MARQUEE_TYPE_HORIZONTAL
+            )
         }
 
         rv_list?.postDelayed({
-
             val marqueeItems = mutableListOf<MarqueeItem>()
             marqueeItems.add(MarqueeItem("消息1: 欢迎使用跑马灯功能!"))
             marqueeItems.add(MarqueeItem("消息2: RecyclerView 横向滚动。"))

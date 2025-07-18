@@ -67,4 +67,9 @@ dependencies {
     implementation("com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30")
     implementation("io.reactivex.rxjava2:rxjava:2.1.16")
     implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
+
+    // bilibili 弹幕
+    implementation("com.github.ctiao:DanmakuFlameMaster:0.9.25")
+//    implementation("com.github.ctiao:ndkbitmap-armv7a:0.9.24")
+//    implementation("com.github.ctiao:ndkbitmap-armv5:0.9.24")
 }

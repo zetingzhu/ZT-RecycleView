@@ -9,6 +9,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZTRecycleView">
         <activity
+            android:name=".blibli.BliBliDanmuAct"
+            android:exported="false" />
+        <activity
+            android:name=".danmurv.LaneTestAct"
+            android:exported="false" />
+        <activity
+            android:name=".danmu.DanmuAct"
+            android:exported="false" />
+        <activity
             android:name=".test.TestMarqueeAct"
             android:exported="false" />
         <activity
@@ -30,6 +39,12 @@
             android:exported="false" />
         <activity
             android:name=".ver_ai.AiYourVerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".vers.VerSingleAct"
+            android:exported="false" />
+        <activity
+            android:name=".pubu.PoemWaterfallActivity"
             android:exported="false" />
     </application>
 
