@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <!-- 表头区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 左上角固定表头 -->
+        <TextView
+            android:id="@+id/fixed_header"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:background="#EEEEEE"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="ID" />
+
+        <!-- 可滚动表头部分 -->
+        <com.example.zt_horandversliding.ui.LinkedScrollView
+            android:id="@+id/header_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/header_recycler_view"
+                tools:listitem="@layout/item_table_header"
+                tools:itemCount="2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never" />
+
+        </com.example.zt_horandversliding.ui.LinkedScrollView>
+    </LinearLayout>
+
+    <!-- 内容区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- 固定列部分 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/fixed_column_recycler_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_table_fixed_cell" />
+
+        <!-- 可滚动内容部分 -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/vertical_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <com.example.zt_horandversliding.ui.LinkedScrollView
+                android:id="@+id/content_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/content_recycler_view"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_table_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+
+            </com.example.zt_horandversliding.ui.LinkedScrollView>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</LinearLayout>

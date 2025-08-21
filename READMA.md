@@ -85,3 +85,11 @@ lruCache 存储列表
 
 RecyclerView实现垂直自动无限滚动，类似于中奖信息，跑马灯
 https://github.com/yebook/AutoScrollRecyclerView
+
+
+[zt-horandversliding](zt-listscrollshor-v1)
+实现列表横线，纵向滚动 ，未完成，不好用
+[zt-listscrollshor-v2](zt-listscrollshor-v2)
+实现列表横线，纵向滚动 ，未完成，不好用
+[zt-listscrollshor-v3](zt-listscrollshor-v3)
+实现列表横线，纵向滚动 ， 可以使用这个方案

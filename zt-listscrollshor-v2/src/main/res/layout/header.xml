@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="#e0e0e0">
+
+    <!-- 固定的第一列表头 -->
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#d0d0d0">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="项目名称"/>
+    </LinearLayout>
+
+    <!-- 可横向滑动的其他列表头 -->
+    <HorizontalScrollView
+        android:id="@+id/headerScrollView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:text="列1标题"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:text="列2标题"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:text="列3标题"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:text="列4标题"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>
