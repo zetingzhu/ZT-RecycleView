@@ -9,10 +9,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.scwang.smart.refresh.layout.api.RefreshLayout
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener
 import java.util.Random
 
 class MainActivity : AppCompatActivity() {
     var stickItemDecoration: StickyHeaderItemDecoration? = null
+    private lateinit var smartRefreshLayout: SmartRefreshLayout
+    private var isLoadingMore = false
+    private var showLoadingItem = false
+    private lateinit var testData: MutableList<NewsItem> // 修正声明
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         // 新增：初始化RecyclerView和测试数据
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        var testData: MutableList<NewsItem> = mutableListOf()
+        testData = mutableListOf()
         for (index in 1..20) {
             testData.add(
                 NewsItem(
@@ -37,11 +45,12 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
-        recyclerView.adapter = NewsAdapter(testData, object : () -> Unit {
+        val adapter = NewsAdapter(testData, object : () -> Unit {
             override fun invoke() {
                 Toast.makeText(this@MainActivity, "关闭", Toast.LENGTH_SHORT).show()
             }
         })
+        recyclerView.adapter = adapter
         // 添加悬浮标题装饰
         stickItemDecoration = StickyHeaderItemDecoration { position ->
             testData.getOrNull(position)?.title ?: ""
@@ -85,6 +94,65 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        smartRefreshLayout = findViewById(R.id.smartRefreshLayout)
+        // 下拉刷新
+        smartRefreshLayout.setOnRefreshListener(object : OnRefreshListener {
+            override fun onRefresh(refreshLayout: RefreshLayout) {
+                smartRefreshLayout.postDelayed({
+                    testData.clear()
+                    for (index in 1..20) {
+                        testData.add(
+                            NewsItem(
+                                title = "刷新后新闻头条${index}",
+                                imageUrl = R.drawable.th,
+                                content = "这是新闻内容${index}。",
+                                desc = randomStr()
+                            )
+                        )
+                    }
+                    recyclerView.adapter?.notifyDataSetChanged()
+                    smartRefreshLayout.finishRefresh()
+                }, 1200)
+            }
+        })
+
+        // 上拉加载更多
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(rv, dx, dy)
+                if (!rv.canScrollVertically(1) && !isLoadingMore) {
+                    isLoadingMore = true
+                    // 添加加载中item
+                    showLoadingItem = true
+                    adapter.showLoadingItem = true
+                    adapter.notifyItemInserted(testData.size)
+                    // 延迟滚动到底部，确保加载中item可见
+                    recyclerView.post {
+                        recyclerView.scrollToPosition(adapter.itemCount - 1)
+                    }
+                    // 模拟加载更多
+                    rv.postDelayed({
+                        // 移除加载中item
+                        showLoadingItem = false
+                        adapter.showLoadingItem = false
+                        adapter.notifyItemRemoved(testData.size)
+                        val start = testData.size + 1
+                        for (index in start until start + 10) {
+                            testData.add(
+                                NewsItem(
+                                    title = "加载更多新闻头条${index}",
+                                    imageUrl = R.drawable.th,
+                                    content = "这是新闻内容${index}。",
+                                    desc = randomStr()
+                                )
+                            )
+                        }
+                        adapter.notifyDataSetChanged()
+                        isLoadingMore = false
+                    }, 1200)
+                }
+            }
+        })
     }
 
 

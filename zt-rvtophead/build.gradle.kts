@@ -60,5 +60,15 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    implementation("io.github.scwang90:refresh-layout-kernel:3.0.0-alpha")//核心必须依赖
+    implementation("io.github.scwang90:refresh-header-classics:3.0.0-alpha")//经典刷新头
+    implementation("io.github.scwang90:refresh-header-radar:3.0.0-alpha")//雷达刷新头
+    implementation("io.github.scwang90:refresh-header-falsify:3.0.0-alpha")//虚拟刷新头
+    implementation("io.github.scwang90:refresh-header-material:3.0.0-alpha")//谷歌刷新头
+    implementation("io.github.scwang90:refresh-header-two-level:3.0.0-alpha")//二级刷新头
+    implementation("io.github.scwang90:refresh-footer-ball:3.0.0-alpha")//球脉冲加载
+    implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")//经典加载
 }
