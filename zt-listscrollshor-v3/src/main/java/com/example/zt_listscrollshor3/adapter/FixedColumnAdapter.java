@@ -14,9 +14,16 @@ import java.util.List;
 
 public class FixedColumnAdapter extends RecyclerView.Adapter<FixedColumnAdapter.FixedColumnViewHolder> {
     private List<String> fixedColumnList;
+    private static final String TAG = "ZTDebug";
 
     public FixedColumnAdapter(List<String> fixedColumnList) {
         this.fixedColumnList = fixedColumnList;
+        setHasStableIds(true); // 启用稳定ID提高性能
+    }
+    
+    @Override
+    public long getItemId(int position) {
+        return position; // 使用位置作为稳定ID
     }
 
     @NonNull

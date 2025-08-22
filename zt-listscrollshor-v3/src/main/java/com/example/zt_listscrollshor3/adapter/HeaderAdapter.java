@@ -15,10 +15,17 @@ import com.example.zt_listscrollshor3.R;
 public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.HeaderViewHolder> {
     private final List<String> headerList;
     private final List<Integer> columnWidths;
+    private static final String TAG = "ZTDebug";
 
     public HeaderAdapter(List<String> headerList, List<Integer> columnWidths) {
         this.headerList = headerList;
         this.columnWidths = columnWidths;
+        setHasStableIds(true); // 启用稳定ID提高性能
+    }
+    
+    @Override
+    public long getItemId(int position) {
+        return position; // 使用位置作为稳定ID
     }
 
     @NonNull

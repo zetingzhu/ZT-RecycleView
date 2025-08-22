@@ -47,20 +47,27 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.RowViewH
     public void onBindViewHolder(@NonNull RowViewHolder holder, int position) {
         Log.d(TAG, "ContentAdapter onBindViewHolder: position=" + position);
         List<String> row = contentList.get(position);
+        
+        // 确保布局管理器已设置
         if (holder.recyclerView.getLayoutManager() == null) {
-            holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
+            // 禁用预测动画以提高性能
+            layoutManager.setItemPrefetchEnabled(true);
+            layoutManager.setInitialPrefetchItemCount(4); // 预取前4个项目
+            holder.recyclerView.setLayoutManager(layoutManager);
+            // 设置固定大小可以提高性能
+            holder.recyclerView.setHasFixedSize(true);
         }
-        if (holder.recyclerView.getAdapter() == null) {
-            RowAdapter rowAdapter = new RowAdapter(row, columnWidths);
-            holder.recyclerView.setAdapter(rowAdapter);
-            holder.rowAdapter = rowAdapter;
+        
+        // 优化适配器创建和复用
+        if (holder.rowAdapter == null) {
+            holder.rowAdapter = new RowAdapter(row, columnWidths);
+            holder.recyclerView.setAdapter(holder.rowAdapter);
         } else {
-            if (holder.rowAdapter == null) {
-                holder.rowAdapter = (RowAdapter) holder.recyclerView.getAdapter();
-            }
             // 只刷新数据，不全量刷新
             holder.rowAdapter.setRow(row);
         }
+        
         if (onRowBindListener != null) {
             onRowBindListener.onRowBind(holder.recyclerView);
         }

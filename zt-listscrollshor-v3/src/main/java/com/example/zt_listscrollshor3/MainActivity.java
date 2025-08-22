@@ -23,6 +23,7 @@ import com.example.zt_listscrollshor3.adapter.ContentAdapter;
 
 import org.jspecify.annotations.NonNull;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -35,9 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
     // 用于同步横向滚动的变量
     private int lastScrollX = 0;
-    private final List<RecyclerView> rowRecyclerViews = new ArrayList<>();
     private boolean isSyncingScroll = false; // 防止递归触发
     private boolean isSyncingVerticalScroll = false; // 防止递归触发垂直同步
+
+    // 只使用弱引用列表，避免内存泄漏
+    private final List<WeakReference<RecyclerView>> weakRowRecyclerViews = new ArrayList<>();
 
     private List<List<String>> contentList; // <-- 提升为成员变量
 
@@ -52,13 +55,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
-            @Override
-            public @NonNull WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            }
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
         });
 
         // 1. 初始化各区域RecyclerView
@@ -66,10 +66,29 @@ public class MainActivity extends AppCompatActivity {
         rvHeader = findViewById(R.id.rvHeader);
         rvContent = findViewById(R.id.rvContent);
 
-        // 2. 设置布局管理器
-        rvFixedColumn.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvHeader.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        rvContent.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        // 2. 设置布局管理器并优化性能
+        LinearLayoutManager fixedColumnLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager headerLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        LinearLayoutManager contentLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+
+        // 启用预取以提高滚动性能
+        fixedColumnLayoutManager.setItemPrefetchEnabled(true);
+        headerLayoutManager.setItemPrefetchEnabled(true);
+        contentLayoutManager.setItemPrefetchEnabled(true);
+
+        // 设置预取项目数量
+        fixedColumnLayoutManager.setInitialPrefetchItemCount(5);
+        headerLayoutManager.setInitialPrefetchItemCount(5);
+        contentLayoutManager.setInitialPrefetchItemCount(3);
+
+        rvFixedColumn.setLayoutManager(fixedColumnLayoutManager);
+        rvHeader.setLayoutManager(headerLayoutManager);
+        rvContent.setLayoutManager(contentLayoutManager);
+
+        // 设置固定大小可以提高性能
+        rvFixedColumn.setHasFixedSize(true);
+        rvHeader.setHasFixedSize(true);
+        rvContent.setHasFixedSize(true);
 
         // ====== 示例数据填充 ======
         // 假设有5列（含固定列）和20行
@@ -99,26 +118,48 @@ public class MainActivity extends AppCompatActivity {
         rvContent.setAdapter(new ContentAdapter(this, contentList, columnWidths, new ContentAdapter.OnRowBindListener() {
             @Override
             public void onRowBind(RecyclerView rowRecyclerView) {
-                // 收集所有横向RecyclerView用于同步
-                if (!rowRecyclerViews.contains(rowRecyclerView)) {
-                    rowRecyclerViews.add(rowRecyclerView);
-                    // 设置初始滚动位置（用scrollTo保证绝对位置）
+                // 使用弱引用收集所有横向RecyclerView用于同步，避免内存泄漏
+                boolean isNewView = true;
+                for (WeakReference<RecyclerView> weakRef : weakRowRecyclerViews) {
+                    RecyclerView rv = weakRef.get();
+                    if (rv == rowRecyclerView) {
+                        isNewView = false;
+                        break;
+                    }
+                }
+
+                if (isNewView) {
+                    // 清理已经被回收的引用
+                    for (int i = weakRowRecyclerViews.size() - 1; i >= 0; i--) {
+                        if (weakRowRecyclerViews.get(i).get() == null) {
+                            weakRowRecyclerViews.remove(i);
+                        }
+                    }
+
+                    // 添加新的RecyclerView弱引用
+                    weakRowRecyclerViews.add(new WeakReference<>(rowRecyclerView));
+
+                    // 设置初始滚动位置
                     rowRecyclerView.scrollToPosition(0);
                 }
+
                 // 无论是否已存在，都同步横向滚动到lastScrollX
                 rowRecyclerView.post(() -> {
-                    int currentX = rowRecyclerView.computeHorizontalScrollOffset();
-                    int dx = lastScrollX - currentX;
-                    if (dx != 0) {
-                        rowRecyclerView.scrollBy(dx, 0);
+                    if (rowRecyclerView.isAttachedToWindow()) {
+                        int currentX = rowRecyclerView.computeHorizontalScrollOffset();
+                        int dx = lastScrollX - currentX;
+                        if (dx != 0) {
+                            rowRecyclerView.scrollBy(dx, 0);
+                        }
                     }
                 });
-                // 监听横向滚动
+
+                // 监听横向滚动，使用更高效的方式
                 rowRecyclerView.clearOnScrollListeners();
                 rowRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                        if (dx != 0) {
+                        if (dx != 0 && !isSyncingScroll) {
                             syncHorizontalScroll(recyclerView);
                         }
                     }
@@ -172,13 +213,38 @@ public class MainActivity extends AppCompatActivity {
 
     // 轮询定时修改某一行的部分值
     private void startPollingRowUpdate() {
+        if (isPolling) return; // 避免重复启动
         isPolling = true;
         pollHandler.post(pollRunnable);
+        Log.d(TAG, "轮询更新已启动");
     }
 
     private void stopPollingRowUpdate() {
+        if (!isPolling) return; // 避免重复停止
         isPolling = false;
         pollHandler.removeCallbacks(pollRunnable);
+        Log.d(TAG, "轮询更新已停止");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startPollingRowUpdate(); // 在界面可见时启动轮询
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopPollingRowUpdate(); // 在界面不可见时停止轮询，节省资源
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 清理资源，避免内存泄漏
+        stopPollingRowUpdate();
+        pollHandler.removeCallbacksAndMessages(null);
+        weakRowRecyclerViews.clear();
     }
 
     /**
@@ -208,37 +274,75 @@ public class MainActivity extends AppCompatActivity {
     private void syncHorizontalScroll(RecyclerView source) {
         if (isSyncingScroll) return;
         isSyncingScroll = true;
-        int scrollX = source.computeHorizontalScrollOffset();
-        lastScrollX = scrollX;
-        // 同步所有横向RecyclerView和表头
-        for (RecyclerView rv : rowRecyclerViews) {
-            if (rv != source) {
-                rv.scrollBy(scrollX - rv.computeHorizontalScrollOffset(), 0);
+
+        try {
+            int scrollX = source.computeHorizontalScrollOffset();
+            lastScrollX = scrollX;
+
+            // 清理失效的弱引用
+            for (int i = weakRowRecyclerViews.size() - 1; i >= 0; i--) {
+                if (weakRowRecyclerViews.get(i).get() == null) {
+                    weakRowRecyclerViews.remove(i);
+                }
             }
+
+            // 同步所有横向RecyclerView
+            for (WeakReference<RecyclerView> weakRef : weakRowRecyclerViews) {
+                RecyclerView rv = weakRef.get();
+                if (rv == null || rv == source || !rv.isAttachedToWindow()) {
+                    continue;
+                }
+
+                int currentX = rv.computeHorizontalScrollOffset();
+                int dx = scrollX - currentX;
+                if (dx != 0) {
+                    rv.scrollBy(dx, 0);
+                }
+            }
+
+            // 同步表头
+            if (rvHeader != source && rvHeader.isAttachedToWindow()) {
+                int headerCurrentX = rvHeader.computeHorizontalScrollOffset();
+                int dx = scrollX - headerCurrentX;
+                if (dx != 0) {
+                    rvHeader.scrollBy(dx, 0);
+                }
+            }
+        } finally {
+            isSyncingScroll = false;
         }
-        if (rvHeader != source) {
-            rvHeader.scrollBy(scrollX - rvHeader.computeHorizontalScrollOffset(), 0);
-        }
-        isSyncingScroll = false;
     }
 
     // 随机修改第 row 行的若干列，并刷新该行
     private void updateRowValues(int row, List<Integer> columnsToUpdate) {
         Log.d(TAG, "updateRowValues: row=" + row + ", columns=" + columnsToUpdate);
         if (row < 0 || row >= contentList.size()) return;
+
+        // 获取行数据并更新
         List<String> rowData = contentList.get(row);
         for (int col : columnsToUpdate) {
             if (col >= 0 && col < rowData.size()) {
                 rowData.set(col, "新值" + randomStr());
             }
         }
+
+        // 使用主线程更新UI
         rvContent.post(() -> {
+            // 检查Activity是否已销毁
+            if (isFinishing() || isDestroyed()) return;
+
+            // 查找对应的ViewHolder
             RecyclerView.ViewHolder vh = rvContent.findViewHolderForAdapterPosition(row);
             if (vh instanceof ContentAdapter.RowViewHolder) {
                 ContentAdapter.RowViewHolder rowVH = (ContentAdapter.RowViewHolder) vh;
                 if (rowVH.rowAdapter != null) {
+                    // 只更新变化的列，提高性能
                     rowVH.rowAdapter.setRow(rowData, columnsToUpdate);
                 }
+            } else {
+                // 如果ViewHolder不可见，通知适配器更新该项
+                // 这样当它滚动回可见区域时会显示最新数据
+                rvContent.getAdapter().notifyItemChanged(row);
             }
         });
     }
@@ -247,14 +351,29 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if (!isPolling) return;
-            int row = pollRowIndex;
-            List<Integer> cols = new ArrayList<>();
-            cols.add(1);
-            cols.add(2);
-            Log.d(TAG, "pollRunnable: pollRowIndex=" + pollRowIndex);
-            updateRowValues(row, cols);
-            pollRowIndex = (pollRowIndex + 1) % contentList.size();
-            pollHandler.postDelayed(this, 1000L);
+
+            try {
+                // 随机选择1-3列进行更新
+                int row = pollRowIndex;
+                List<Integer> cols = new ArrayList<>();
+                int colCount = 1 + new Random().nextInt(3); // 1到3列
+                for (int i = 0; i < colCount; i++) {
+                    cols.add(new Random().nextInt(Math.min(10, contentList.get(0).size())));
+                }
+
+                Log.d(TAG, "pollRunnable: pollRowIndex=" + pollRowIndex + ", 更新" + colCount + "列");
+                updateRowValues(row, cols);
+
+                // 更新下一行索引
+                pollRowIndex = (pollRowIndex + 1) % contentList.size();
+            } catch (Exception e) {
+                Log.e(TAG, "轮询更新出错: " + e.getMessage(), e);
+            } finally {
+                // 确保继续轮询
+                if (isPolling) {
+                    pollHandler.postDelayed(this, 1000L);
+                }
+            }
         }
     };
 

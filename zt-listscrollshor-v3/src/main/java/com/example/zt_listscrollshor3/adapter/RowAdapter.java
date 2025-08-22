@@ -23,15 +23,19 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.CellViewHolder> 
         Log.d("ZTDebug", "RowAdapter constructed for row hash=" + row.hashCode());
     }
 
-    // 只刷新被修改的列
-    public void setRow(List<String> row, List<Integer> changedColumns) {
-        this.row = row;
-        Log.d("ZTDebug", "RowAdapter setRow: row hash=" + row.toString() + ", changedColumns=" + changedColumns);
-        if (changedColumns != null) {
+    // 只刷新被修改的列，使用更高效的更新方式
+    public void setRow(List<String> newRow, List<Integer> changedColumns) {
+        this.row = newRow;
+        Log.d("ZTDebug", "RowAdapter setRow: row hash=" + newRow.hashCode() + ", changedColumns=" + changedColumns);
+        if (changedColumns != null && !changedColumns.isEmpty()) {
+            // 只更新变化的列，减少不必要的刷新
             for (int col : changedColumns) {
-                notifyItemChanged(col);
+                if (col >= 0 && col < row.size()) {
+                    notifyItemChanged(col);
+                }
             }
         } else {
+            // 使用范围更新而不是全量更新
             notifyItemRangeChanged(0, row.size());
         }
     }
