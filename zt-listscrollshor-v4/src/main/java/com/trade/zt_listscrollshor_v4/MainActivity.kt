@@ -79,12 +79,12 @@ class MainActivity : AppCompatActivity() {
         val list = mutableListOf<ChildObj>()
 
         // 创建不同的数据以便观察变化
-        for (i in 1..8) {
+        for (i in 1..20) {
             val childObj = ChildObj("更新后的列表项 $i")
 
             // 为每个垂直项创建横向子项
             val subItems = mutableListOf<SubItemObj>()
-            for (j in 1..5) {
+            for (j in 1..10) {
                 subItems.add(
                     SubItemObj(
                         "更新子项 $j",

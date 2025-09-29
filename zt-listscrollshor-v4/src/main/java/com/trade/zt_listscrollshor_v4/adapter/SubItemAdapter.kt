@@ -14,9 +14,10 @@ import com.trade.zt_listscrollshor_v4.entiy.SubItemObj
 class SubItemAdapter(private var dataList: MutableList<SubItemObj>) :
     RecyclerView.Adapter<SubItemAdapter.ViewHolder>() {
 
-    
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.sub_item_layout, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.sub_item_layout, parent, false)
         return ViewHolder(view)
     }
 
@@ -24,13 +25,10 @@ class SubItemAdapter(private var dataList: MutableList<SubItemObj>) :
         val data = dataList[position]
         holder.tvSubTitle.text = data.title
         holder.tvSubContent.text = data.content
-        
-        // 确保不会在滑动过程中改变布局尺寸
-        holder.itemView.setHasTransientState(false)
     }
-    
+
     override fun getItemCount(): Int = dataList.size
-    
+
     /**
      * 更新数据列表
      */
@@ -38,7 +36,7 @@ class SubItemAdapter(private var dataList: MutableList<SubItemObj>) :
         this.dataList = newData
         notifyDataSetChanged()
     }
-    
+
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvSubTitle: TextView = itemView.findViewById(R.id.tv_sub_title)

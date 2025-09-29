@@ -13,7 +13,7 @@ import java.util.HashSet;
  * @author: zeting
  * @date: 2025/4/28
  */
-public class SyncRecycleViewScrollUtil {
+public class MoreRVUtil {
     private HashSet<RecyclerView> observerList = new HashSet<>();
     //    private List<RecyclerView> observerList = new ArrayList<>();
     private int firstPos = -1;
