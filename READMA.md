@@ -1,4 +1,4 @@
-app
+**app
 
 [app](app) RecycleView 尝试
 "普通列表"
@@ -47,28 +47,25 @@ app
 
 [zt-rvitemdecoration](zt-rvitemdecoration) 各种分割线
 
-
 [zt-rv-downtimer](zt-rv-downtimer) RecycleView 中倒计时
-
 
 [zt_rv_include_rv](zt_rv_include_rv)
 RecycleView 包含 Recycleview 设配器如何设计
 
 [zt_qrefreshlayout_sample](zt_qrefreshlayout_sample)
-https://github.com/zhangxq/QRefreshLayout 
-下拉刷新，上拉加载更多，自动加载更多，用法同SwipeRefreshLayout，兼容所有view，兼容nested滚动，可以自定义header footer，支持下拉到二楼
-
+https://github.com/zhangxq/QRefreshLayout
+下拉刷新，上拉加载更多，自动加载更多，用法同SwipeRefreshLayout，兼容所有view，兼容nested滚动，可以自定义header
+footer，支持下拉到二楼
 
 [zt_bgarefreshlayout-android_sample](zt_bgarefreshlayout-android_sample)
 https://github.com/bingoogolapple/BGARefreshLayout-Android
 多种下拉刷新效果、上拉加载更多、可配置自定义头部广告位
 --- 这个不好用，滑动会断触，导致重新滑动跳动
 
-
 [zt_smartrefreshlayout_sample](zt_smartrefreshlayout_sample)
 https://github.com/scwang90/SmartRefreshLayout
-下拉刷新、上拉加载、二级刷新、淘宝二楼、RefreshLayout、OverScroll，Android智能下拉刷新框架，支持越界回弹、越界拖动，具有极强的扩展性，集成了几十种炫酷的Header和 Footer。
-
+下拉刷新、上拉加载、二级刷新、淘宝二楼、RefreshLayout、OverScroll，Android智能下拉刷新框架，支持越界回弹、越界拖动，具有极强的扩展性，集成了几十种炫酷的Header和
+Footer。
 
 [zt_rv_cache](zt_rv_cache)
 RecycleView 各种数处理
@@ -76,25 +73,28 @@ RecycleView 各种数处理
 lruCache 存储列表
 先入先出 map
 
-
 [zt_rvhor_marquee](zt_rvhor_marquee)
 用 RecycleView 实现 横向，竖向，跑马灯效果
-
 
 后面研究一下
 
 RecyclerView实现垂直自动无限滚动，类似于中奖信息，跑马灯
 https://github.com/yebook/AutoScrollRecyclerView
 
-
+[zt_rv_include_rv](zt_rv_include_rv)
+失败了，没法用
 [zt-horandversliding](zt-listscrollshor-v1)
-实现列表横线，纵向滚动 ，未完成，不好用
+实现列表横向，纵向滚动 ，未完成，不好用
 [zt-listscrollshor-v2](zt-listscrollshor-v2)
-实现列表横线，纵向滚动 ，未完成，不好用
+实现列表横向，纵向滚动 ，未完成，不好用
 [zt-listscrollshor-v3](zt-listscrollshor-v3)
-实现列表横线，纵向滚动 ， 可以使用这个方案
-
+实现列表横向，纵向滚动 ， 可以使用这个方案**
+[zt-listscrollshor-v4](zt-listscrollshor-v4)
+实现列表横向，纵向滚动 ， 未完成
 
 
 [zt-rvtophead](zt-rvtophead)
 实现列表到了某一行添加一个悬浮头信息
+
+[zt-rv_group-list](zt-rv_group-list)
+通过 recycleview 实现分组

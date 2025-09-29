@@ -17,3 +17,5 @@ local.properties
 /.codebuddy/
 /.vscode/
 /.kotlin/
+/.kotlin/
+/.vscode/
