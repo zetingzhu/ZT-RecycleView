@@ -14,7 +14,12 @@ import com.trade.zt_listscrollshor_v4.adapter.MHeadAdapter
 import com.trade.zt_listscrollshor_v4.entiy.ChildObj
 import com.trade.zt_listscrollshor_v4.entiy.HeadObj
 import com.trade.zt_listscrollshor_v4.entiy.SubItemObj
-import com.trade.zt_listscrollshor_v4.util.SyncRecycleViewScrollUtil
+import java.util.Random
+import java.util.function.BiConsumer
+import java.util.function.IntPredicate
+import java.util.function.ObjIntConsumer
+import java.util.function.Supplier
+
 
 class MainActivity : AppCompatActivity() {
     private var rv_head: RecyclerView? = null
@@ -126,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 subItems.add(
                     SubItemObj(
                         "子项 $j",
-                        "内容 $j-$i"
+                        randomStr()
                     )
                 )
             }
@@ -136,5 +141,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         return list
+    }
+
+
+    fun randomStr(): String {
+        // 生成长度5-15的随机字符串
+        val minLength = 1
+        val maxLength = 20
+        val random = Random()
+        val length = random.nextInt(maxLength - minLength + 1) + minLength
+        val randomString = random.ints(48, 122 + 1) // ASCII范围：'0'到'z'
+            .filter(IntPredicate { i: Int -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97) }) // 过滤掉特殊字符
+            .limit(length.toLong())
+            .collect<java.lang.StringBuilder>(
+                Supplier { StringBuilder() },
+                ObjIntConsumer { obj: java.lang.StringBuilder?, codePoint: Int ->
+                    obj!!.appendCodePoint(codePoint)
+                },
+                BiConsumer { obj: java.lang.StringBuilder?, s: java.lang.StringBuilder? ->
+                    obj!!.append(s)
+                })
+            .toString()
+        return randomString.toString()
     }
 }

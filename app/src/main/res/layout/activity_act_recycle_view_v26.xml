@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".act.ActRecycleViewV1">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_list_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".act.ActRecycleViewV1"
-        tools:itemCount="1">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="@color/yellow" />
+    tools:context=".act.ActRecycleViewV26">
 
     <com.example.zzt.recycleview.groupedadapter.sticky.RVStickyHeaderLayoutV2
         android:id="@+id/sticky_layout"
@@ -29,10 +14,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".act.ActRecycleViewV1">
+            android:layout_height="match_parent" />
 
-        </androidx.recyclerview.widget.RecyclerView>
     </com.example.zzt.recycleview.groupedadapter.sticky.RVStickyHeaderLayoutV2>
 
 </LinearLayout>

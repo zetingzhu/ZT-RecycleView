@@ -6,34 +6,26 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/ll_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#E9F8E6"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="TextView"
             android:textColor="@color/red"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_msg"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="TextView"
-            android:textColor="@color/gray"
-            android:textSize="18sp" />
+            android:text="点击" />
     </LinearLayout>
-
-    <View
-        android:id="@+id/view_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:background="@color/blue" />
 </LinearLayout>

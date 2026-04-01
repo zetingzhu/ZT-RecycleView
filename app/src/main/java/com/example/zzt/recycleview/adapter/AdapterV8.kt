@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.entity.ItemData
+import com.example.zzt.recycleview.groupedadapter.sticky.IStickyHeaderProvider
 import com.example.zzt.recycleview.hold.BaseRecyclerViewHolder
 
 
@@ -15,7 +16,7 @@ import com.example.zzt.recycleview.hold.BaseRecyclerViewHolder
  * @date: 2023/8/30
  *
  */
-class AdapterV8 : TradeOrderMergeHoldAdapter<BaseRecyclerViewHolder>() {
+class AdapterV8 : RecyclerView.Adapter<BaseRecyclerViewHolder>(), IStickyHeaderProvider<BaseRecyclerViewHolder> {
     var mList: MutableList<ItemData>? = null
 
     var showViewMpa: MutableMap<Int, Boolean> = mutableMapOf()
@@ -68,11 +69,15 @@ class AdapterV8 : TradeOrderMergeHoldAdapter<BaseRecyclerViewHolder>() {
         return mList?.size ?: 0
     }
 
-    override fun isStickyHeaderBoo(pos: Int): Boolean {
-        return showViewMpa.get(pos) ?: false
+    override fun getStickyHeaderPosition(pos: Int): Int {
+        return pos
     }
 
-    override fun onBindViewHolderHead(
+    override fun getNextStickyHeaderPosition(currentHeaderPos: Int): Int {
+        return currentHeaderPos + 1
+    }
+
+    override fun onBindViewHolderStickyHead(
         holder: BaseRecyclerViewHolder?,
         headPos: Int,
         showHead: Boolean
@@ -98,6 +103,7 @@ class AdapterV8 : TradeOrderMergeHoldAdapter<BaseRecyclerViewHolder>() {
         itemData?.let {
             var tv_title = holder?.get<TextView>(R.id.tv_title)
             var view_bottom: View? = holder?.get(R.id.view_bottom)
+            var ll_item_layout: View? = holder?.get(R.id.ll_item_layout)
             tv_title?.text = "${it.id}  >> ${it.title}"
             holder?.get<TextView>(R.id.tv_msg)?.text = "${it.msg}"
             if (it.bgColor != 0) {
@@ -110,7 +116,7 @@ class AdapterV8 : TradeOrderMergeHoldAdapter<BaseRecyclerViewHolder>() {
                 showViewMpa.put(realPos, false)
             }
 
-            tv_title?.setOnClickListener {
+            ll_item_layout?.setOnClickListener {
                 if (view_bottom?.visibility == View.VISIBLE) {
                     view_bottom?.visibility = View.GONE
                     showViewMpa.put(realPos, false)

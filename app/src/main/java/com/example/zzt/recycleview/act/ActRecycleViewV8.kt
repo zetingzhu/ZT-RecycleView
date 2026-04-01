@@ -9,7 +9,6 @@ import com.example.zzt.recycleview.R
 import com.example.zzt.recycleview.adapter.AdapterV8
 import com.example.zzt.recycleview.anim3.OutLeftItemAnimator
 import com.example.zzt.recycleview.entity.ItemData
-import com.example.zzt.recycleview.groupedadapter.widget.RVStickyHeaderLayout
 import com.example.zzt.recycleview.hold.BaseRecyclerViewHolder
 import com.example.zzt.recycleview.util.DataListUtil
 import com.zzt.adapter.BtnHorizontalRecyclerAdapter
@@ -19,7 +18,6 @@ open class ActRecycleViewV8 : AppCompatActivity() {
     lateinit var rv_list_top: RecyclerView
     private var mAdapterV1: AdapterV8? = null
     var topListDialog: MutableList<String>? = null
-    var sticky_layout: RVStickyHeaderLayout<BaseRecyclerViewHolder>? = null
 
     var topListener: BtnHorizontalRecyclerAdapter.OnItemClickListener<String>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +44,6 @@ open class ActRecycleViewV8 : AppCompatActivity() {
     private fun initView() {
         rv_list = findViewById(R.id.rv_list)
         rv_list_top = findViewById(R.id.rv_list_top)
-        sticky_layout = findViewById(R.id.sticky_layout)
 
         topListDialog = ArrayList()
         topListDialog?.add("添加")

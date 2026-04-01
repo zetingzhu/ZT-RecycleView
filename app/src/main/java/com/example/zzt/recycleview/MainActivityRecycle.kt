@@ -21,6 +21,8 @@ import com.example.zzt.recycleview.act.ActRecycleViewV21
 import com.example.zzt.recycleview.act.ActRecycleViewV22
 import com.example.zzt.recycleview.act.ActRecycleViewV23
 import com.example.zzt.recycleview.act.ActRecycleViewV24
+import com.example.zzt.recycleview.act.ActRecycleViewV25
+import com.example.zzt.recycleview.act.ActRecycleViewV26
 import com.example.zzt.recycleview.act.ActRecycleViewV3
 import com.example.zzt.recycleview.act.ActRecycleViewV4
 import com.example.zzt.recycleview.act.ActRecycleViewV5
@@ -57,15 +59,34 @@ class MainActivityRecycle : AppCompatActivity() {
             )
         )
         mListDialog.add(StartActivityDao("普通分组列表", "", ActRecycleViewV3::class.java))
-        mListDialog.add(StartActivityDao("可收缩分组列表", "", ActRecycleViewV4::class.java))
-        mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
+        mListDialog.add(StartActivityDao("V4 可收缩分组列表", "", ActRecycleViewV4::class.java))
+        mListDialog.add(StartActivityDao("V5 分组悬浮列表", "", ActRecycleViewV5::class.java))
         mListDialog.add(StartActivityDao("底部自定义分割线", "", ActRvViewV6::class.java))
         mListDialog.add(StartActivityDao("横竖分割线", "", DividerAct::class.java))
         mListDialog.add(StartActivityDao("横竖分割线 2", "第二部分", DividerActV2::class.java))
         mListDialog.add(StartActivityDao("横竖分割线 3", "第三部分", DividerActV3::class.java))
         mListDialog.add(StartActivityDao("添加移除动画", "", ActRecycleViewV7::class.java))
-        mListDialog.add(StartActivityDao("头部悬浮固定", "", ActRecycleViewV8::class.java))
-        mListDialog.add(StartActivityDao("分组悬浮列表", "", ActRecycleViewV5::class.java))
+        mListDialog.add(
+            StartActivityDao(
+                "v8 单列表，部分视图头部悬浮固定",
+                "",
+                ActRecycleViewV8::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
+                "v25 多列表，某一组视图头部悬浮固定",
+                "",
+                ActRecycleViewV25::class.java
+            )
+        )
+        mListDialog.add(
+            StartActivityDao(
+                "v26 ListAdapter 实现分组（Header + Items）且支持展开/收起的逻辑 ，外面在嵌套悬浮",
+                "",
+                ActRecycleViewV26::class.java
+            )
+        )
         mListDialog.add(
             StartActivityDao(
                 "下拉上拉 PullToRefreshRecyclerView 改造 ", "", ActRecycleViewV9::class.java

@@ -107,6 +107,12 @@
         <activity
             android:name=".act.ActRecycleViewV22"
             android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV25"
+            android:exported="false" />
+        <activity
+            android:name=".act.ActRecycleViewV26"
+            android:exported="false" />
     </application>
 
 </manifest>

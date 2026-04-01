@@ -98,3 +98,10 @@ https://github.com/yebook/AutoScrollRecyclerView
 
 [zt-rv_group-list](zt-rv_group-list)
 通过 recycleview 实现分组
+
+[BaseGroupListAdapter.kt](app/src/main/java/com/example/zzt/recycleview/groupedadapter/sticky/BaseGroupListAdapter.kt)
+分组展开收起列表
+[IStickyHeaderProvider.java](app/src/main/java/com/example/zzt/recycleview/groupedadapter/sticky/IStickyHeaderProvider.java)
+RecycleView 悬浮接口
+[RVStickyHeaderLayoutV2.java](app/src/main/java/com/example/zzt/recycleview/groupedadapter/sticky/RVStickyHeaderLayoutV2.java)
+RecycleView 悬浮重写

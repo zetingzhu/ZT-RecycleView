@@ -102,4 +102,23 @@ object DataListUtil {
         oldList?.sortBy { old -> old.sort }
         return oldList
     }
+
+    fun getList100Group(): MutableList<ItemData> {
+        var mList = mutableListOf<ItemData>()
+        for (i in 0..20) {
+            mList.add(ItemData(i, "Header title:${i}", header = 1))
+            for (k in 0..20) {
+                mList.add(
+                    ItemData(
+                        k,
+                        "Content title:${k}",
+                        "msg:$k  ",
+                        header = 0,
+                        headerIndex = k
+                    )
+                )
+            }
+        }
+        return mList
+    }
 }
